@@ -54,8 +54,7 @@ object MedReminderModule {
             context = app,
             klass = MedReminderDataBase::class.java,
             name = "med_reminder_db"
-        ).addTypeConverter(Converters())
-            .build()
+        ).build()
     }
 
 }

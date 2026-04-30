@@ -1,4 +1,4 @@
-package com.app.patientcareapp.feature_med_reminder.presentation
+package com.app.patientcareapp.feature_med_reminder.presentation.show_med_reminders
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
