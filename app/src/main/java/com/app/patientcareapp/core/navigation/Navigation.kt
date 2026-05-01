@@ -4,9 +4,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.app.patientcareapp.core.util.Screen
 import com.app.patientcareapp.feature_health_records.presentation.HealthRecordsScreen
 import com.app.patientcareapp.feature_home.presentation.HomeScreen
@@ -30,13 +32,24 @@ fun Navigation() {
                 HomeScreen()
             }
             composable(Screen.MedReminder.route) {
-                AddEditMedReminderScreen(modifier = Modifier)
+                MedReminderScreen(navController = navController)
             }
             composable(Screen.HealthRecords.route) {
                 HealthRecordsScreen()
             }
             composable(Screen.Profile.route) {
                 ProfileScreen()
+            }
+            composable(
+                route = "add_edit_med_reminder?id={id}",
+                arguments = listOf(
+                    navArgument("id") {
+                        type = NavType.IntType
+                        defaultValue = -1
+                    }
+                )
+            ) {
+                AddEditMedReminderScreen(modifier = Modifier, navController = navController)
             }
         }
     }

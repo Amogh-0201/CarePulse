@@ -3,6 +3,7 @@ package com.app.patientcareapp.feature_med_reminder.presentation.add_edit_med_re
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.patientcareapp.feature_med_reminder.domain.model.MedReminder
@@ -16,8 +17,21 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddEditMedReminderViewModel @Inject constructor(
-    private val useCases: MedReminderUseCases
+    private val useCases: MedReminderUseCases,
+    savedStateHandle: SavedStateHandle
 ): ViewModel() {
+
+    private var currentId: Int? = null
+
+    init {
+        val id = savedStateHandle.get<Int>("id") ?: -1
+        if (id != -1) {
+            loadReminder(id = id)
+        }
+    }
+
+    var heading: String? = "Add Medicine Reminder"
+
     var name by mutableStateOf("")
         private set
 
@@ -95,19 +109,38 @@ class AddEditMedReminderViewModel @Inject constructor(
             try {
                 useCases.saveMedReminderUseCase(
                     MedReminder(
-                        name,
-                        dosage,
-                        times,
-                        startDate!!,
-                        endDate,
-                        repeatType,
-                        isActive,
-                        notes
+                        id = currentId,
+                        medicineName =name,
+                        dosage = dosage,
+                        times = times,
+                        startDate = startDate!!,
+                        endDate = endDate,
+                        repeatType = repeatType,
+                        isActive = isActive,
+                        notes = notes
                     )
                 )
                 _uiEvent.emit(UiEvent.SaveSuccess)
             } catch (e: Exception) {
                 _uiEvent.emit(UiEvent.ShowError(e.message))
+            }
+        }
+    }
+
+    private fun loadReminder(id: Int) {
+        viewModelScope.launch {
+            val reminder = useCases.getMedReminderUseCase(id)
+            reminder?.let {
+                currentId = it.id
+                heading = "Edit Medicine Reminder"
+                name = it.medicineName
+                dosage = it.dosage
+                times = it.times
+                startDate = it.startDate
+                endDate = it.endDate
+                repeatType = it.repeatType
+                isActive = it.isActive
+                notes = it.notes ?: ""
             }
         }
     }

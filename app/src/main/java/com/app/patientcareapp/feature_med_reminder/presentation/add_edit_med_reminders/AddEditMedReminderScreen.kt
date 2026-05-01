@@ -40,6 +40,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.app.patientcareapp.core.util.Screen
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
@@ -48,6 +50,7 @@ import javax.inject.Inject
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditMedReminderScreen(
+    navController: NavController,
     viewModel: AddEditMedReminderViewModel = hiltViewModel(),
     modifier: Modifier
 ) {
@@ -61,7 +64,9 @@ fun AddEditMedReminderScreen(
                 }
                 is AddEditMedReminderViewModel.UiEvent.SaveSuccess -> {
                     snackBarHostState.showSnackbar("Saved Successfully")
-                    //navigation to medReminderScreen
+                    navController.navigate(Screen.MedReminder.route) {
+                        popUpTo("Add_Edit_MedReminder") { inclusive = true}
+                    }
                 }
             }
         }
@@ -90,7 +95,7 @@ fun AddEditMedReminderScreen(
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            Text("Add Medicine Reminder")
+            Text(text = viewModel.heading!!)
 
             Spacer(modifier = Modifier.height(16.dp))
 

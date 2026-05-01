@@ -19,6 +19,7 @@ data class MedReminderEntity(
 ) {
     fun toMedReminder(): MedReminder {
         return MedReminder(
+            id = id,
             medicineName =  medicineName,
             dosage =  dosage,
             times =  times,

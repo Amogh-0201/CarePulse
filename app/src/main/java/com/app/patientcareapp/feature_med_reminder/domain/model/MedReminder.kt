@@ -3,6 +3,7 @@ package com.app.patientcareapp.feature_med_reminder.domain.model
 import com.app.patientcareapp.feature_med_reminder.data.local.entity.MedReminderEntity
 
 data class MedReminder(
+    val id: Int? = null,
     val medicineName: String,
     val dosage: String,
     val times: List<String>,
@@ -14,6 +15,7 @@ data class MedReminder(
 ) {
     fun toMedReminderEntity(): MedReminderEntity {
         return MedReminderEntity(
+            id = id?: 0,
             medicineName = medicineName,
             dosage = dosage,
             times = times,
