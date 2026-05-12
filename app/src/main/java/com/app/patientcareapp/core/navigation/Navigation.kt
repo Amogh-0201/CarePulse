@@ -3,6 +3,8 @@ package com.app.patientcareapp.core.navigation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.navigation.navigation
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -14,18 +16,41 @@ import com.app.patientcareapp.feature_health_records.presentation.HealthRecordsS
 import com.app.patientcareapp.feature_home.presentation.HomeScreen
 import com.app.patientcareapp.feature_med_reminder.presentation.add_edit_med_reminders.AddEditMedReminderScreen
 import com.app.patientcareapp.feature_med_reminder.presentation.show_med_reminders.MedReminderScreen
+import com.app.patientcareapp.feature_onboarding.presentation.screens.AskAllergiesScreen
+import com.app.patientcareapp.feature_onboarding.presentation.screens.AskConditionsScreen
+import com.app.patientcareapp.feature_onboarding.presentation.screens.AskVitalsScreen
+import com.app.patientcareapp.feature_onboarding.presentation.screens.BasicInfoScreen
+import com.app.patientcareapp.feature_onboarding.presentation.screens.WelcomeScreen
 import com.app.patientcareapp.feature_profile.presentation.ProfileScreen
 
 @Composable
-fun Navigation() {
+fun Navigation(
+    startDestination: String
+) {
     val navController = rememberNavController()
 
+    val bottomBarScreens = listOf(
+        Screen.Home.route,
+        Screen.MedReminder.route,
+        Screen.HealthRecords.route,
+        Screen.Profile.route
+    )
+
+    val currentRoute = navController.currentBackStackEntryFlow.collectAsState(initial = null)
+        .value
+        ?.destination
+        ?.route
+
     Scaffold(
-        bottomBar = {AppNavBar(navController = navController)}
+        bottomBar = {
+            if(currentRoute in bottomBarScreens) {
+                AppNavBar(navController = navController)
+            }
+        }
     ) {
         NavHost(
             navController = navController,
-            startDestination = Screen.Home.route,
+            startDestination = startDestination,
             modifier = Modifier.padding(it)
         ) {
             composable(Screen.Home.route) {
@@ -50,6 +75,32 @@ fun Navigation() {
                 )
             ) {
                 AddEditMedReminderScreen(modifier = Modifier, navController = navController)
+            }
+
+            navigation(
+                route = "onboarding",
+                startDestination = "welcome_screen"
+            ) {
+
+                composable("welcome_screen") {
+                    WelcomeScreen(navController = navController)
+                }
+
+                composable("basic_info_screen") {
+                    BasicInfoScreen(navController = navController)
+                }
+
+                composable("ask_conditions_screen") {
+                    AskConditionsScreen(navController)
+                }
+
+                composable("ask_vitals_screen") {
+                    AskVitalsScreen(navController)
+                }
+
+                composable("ask_allergies_screen") {
+                    AskAllergiesScreen(navController)
+                }
             }
         }
     }
