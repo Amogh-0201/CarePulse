@@ -1,32 +1,52 @@
-package com.app.patientcareapp.feature_onboarding.presentation.viewmodels
+package com.app.patientcareapp.feature_profile.presentation.edit_profile
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.patientcareapp.core.data.preferences.PreferenceManager
-import com.app.patientcareapp.feature_onboarding.presentation.events.OnBoardingScreenEvents
 import com.app.patientcareapp.feature_profile.domain.model.BloodGroup
 import com.app.patientcareapp.feature_profile.domain.model.Gender
 import com.app.patientcareapp.feature_profile.domain.model.Profile
 import com.app.patientcareapp.feature_profile.domain.use_case.ProfileUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.ranges.contains
+import kotlin.text.isNotBlank
+import kotlin.text.toIntOrNull
+
 
 @HiltViewModel
-class OnBoardingViewModel @Inject constructor(
-    private val useCases: ProfileUseCases,
-    private val preferenceManager: PreferenceManager
+class EditProfileViewModel @Inject constructor(
+    private val useCases: ProfileUseCases
 ): ViewModel() {
+
+    init {
+        viewModelScope.launch {
+            val profiles = useCases.getProfileUseCase()
+            profiles.collectLatest { profile ->
+                profile?.let {
+                    name = it.name
+                    age = it.age
+                    gender = it.gender
+                    bloodGroup = it.bloodGroup
+                    conditions = it.conditions
+                    allergies = it.allergies
+                    bloodPressure = it.bloodPressure?: ""
+                    sugar = it.sugar?: ""
+                }
+            }
+        }
+    }
 
     var name by mutableStateOf("")
         private set
 
-    var age by mutableStateOf("")
+    var age by mutableStateOf<Int?>(null)
         private set
 
     var gender by mutableStateOf<Gender?>(null)
@@ -53,81 +73,64 @@ class OnBoardingViewModel @Inject constructor(
     var allergyInput by mutableStateOf("")
         private set
 
-
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
     sealed class UiEvent {
-
+        object NavigateBackToProfileScreen: UiEvent()
         data class ShowSnackBar(val message: String): UiEvent()
-        object NavigateToMainApp: UiEvent()
     }
 
-    fun onEvent(event: OnBoardingScreenEvents) {
+    fun onEvent(event: EditProfileScreenEvents) {
         when(event) {
-            is OnBoardingScreenEvents.OnNameChange -> {
-                name = event.name
+            is EditProfileScreenEvents.OnAgeChange -> {
+                age = event.age.toIntOrNull()  //only allow the keyboard with numbers
             }
-            is OnBoardingScreenEvents.OnAgeChange -> {
-                age = event.age
-            }
-            is OnBoardingScreenEvents.OnGenderChange -> {
-                gender = event.gender
-            }
-            is OnBoardingScreenEvents.OnBloodGroupChange -> {
-                bloodGroup = event.bloodGroup
-            }
-            is OnBoardingScreenEvents.OnBloodPressureChange -> {
-                bloodPressure = event.bloodPressure
-            }
-            is OnBoardingScreenEvents.OnSugarChange -> {
-                sugar = event.sugar
-            }
-            is OnBoardingScreenEvents.OnConditionInputChange -> {
+            is EditProfileScreenEvents.OnConditionInputChange -> {
                 conditionInput = event.condition
             }
-            is OnBoardingScreenEvents.OnAddCondition -> {
+            is EditProfileScreenEvents.OnAddConditionClick -> {
                 conditions = conditions + conditionInput.trim()
                 conditionInput = ""
             }
-            is OnBoardingScreenEvents.OnRemoveCondition -> {
-                conditions = conditions - event.condition
-            }
-            is OnBoardingScreenEvents.OnAllergyInputChange -> {
+            is EditProfileScreenEvents.OnAllergyInputChange -> {
                 allergyInput = event.allergy
             }
-            is OnBoardingScreenEvents.OnAddAllergy -> {
+            is EditProfileScreenEvents.OnAddAllergyClick -> {
                 allergies = allergies + allergyInput.trim()
                 allergyInput = ""
             }
-            is OnBoardingScreenEvents.OnRemoveAllergy -> {
+            is EditProfileScreenEvents.OnBloodPressureChange -> {
+                bloodPressure = event.bloodPressure
+            }
+            is EditProfileScreenEvents.OnSugarChange -> {
+                sugar = event.sugar
+            }
+            is EditProfileScreenEvents.OnRemoveCondition -> {
+                conditions = conditions - event.condition
+            }
+            is EditProfileScreenEvents.OnRemoveAllergy -> {
                 allergies = allergies - event.allergy
             }
-            OnBoardingScreenEvents.OnFinishButtonClick -> {
+            is EditProfileScreenEvents.OnSaveChangesClick -> {
                 viewModelScope.launch {
                     try {
-                        saveProfile()
-                        preferenceManager.setOnBoardingCompleted(completed = true)
-                        _uiEvent.send(UiEvent.NavigateToMainApp)
+                        updateProfile()
+                        _uiEvent.send(UiEvent.NavigateBackToProfileScreen)
                     } catch(e: Exception) {
-                        _uiEvent.send(
-                            UiEvent.ShowSnackBar(e.message ?: "Something went wrong")
-                        )
+                        _uiEvent.send(UiEvent.ShowSnackBar(e.message ?: "Something went wrong"))
                     }
-
                 }
             }
         }
     }
 
-    fun isBasicInfoValid(): Boolean {
+    fun isBasicInfoValid(): Boolean {  //don't allow to save the changes if not
         return (
                 name.isNotBlank() &&
-                age.isNotBlank() &&
-                age.toIntOrNull() in 1..120 &&
+                age in 1..120 &&
                 gender != null &&
-                bloodGroup != null
-                )
+                bloodGroup != null)
     }
 
     fun isConditionInputValid(): Boolean {
@@ -135,20 +138,16 @@ class OnBoardingViewModel @Inject constructor(
                 conditionInput.trim() !in conditions)
     }
 
-    fun isVitalsEmpty(): Boolean {
-        return bloodPressure.isBlank() && sugar.isBlank()
-    }
-
     fun isAllergyInputValid(): Boolean {
         return (allergyInput.isNotBlank() &&
                 allergyInput.trim() !in allergies)
     }
 
-    private suspend fun saveProfile() {
+    suspend fun updateProfile() {
         useCases.saveProfileUseCase(
             Profile(
                 name = name,
-                age = age.toInt(),
+                age = age!!,
                 gender = gender!!,
                 bloodGroup = bloodGroup!!,
                 conditions = conditions,

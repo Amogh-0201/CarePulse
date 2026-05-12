@@ -9,8 +9,6 @@ sealed class OnBoardingScreenEvents {
     data class OnAgeChange(val age: String): OnBoardingScreenEvents()
     data class OnGenderChange(val gender: Gender): OnBoardingScreenEvents()
     data class OnBloodGroupChange(val bloodGroup: BloodGroup): OnBoardingScreenEvents()
-    data class OnConditionsChange(val conditions: List<String>): OnBoardingScreenEvents()
-    data class OnAllergiesChange(val allergies: List<String>): OnBoardingScreenEvents()
     data class OnBloodPressureChange(val bloodPressure: String): OnBoardingScreenEvents()
     data class OnSugarChange(val sugar: String): OnBoardingScreenEvents()
     object OnFinishButtonClick: OnBoardingScreenEvents()

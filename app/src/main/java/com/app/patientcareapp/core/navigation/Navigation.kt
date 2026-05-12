@@ -21,7 +21,8 @@ import com.app.patientcareapp.feature_onboarding.presentation.screens.AskConditi
 import com.app.patientcareapp.feature_onboarding.presentation.screens.AskVitalsScreen
 import com.app.patientcareapp.feature_onboarding.presentation.screens.BasicInfoScreen
 import com.app.patientcareapp.feature_onboarding.presentation.screens.WelcomeScreen
-import com.app.patientcareapp.feature_profile.presentation.ProfileScreen
+import com.app.patientcareapp.feature_profile.presentation.edit_profile.EditProfileScreen
+import com.app.patientcareapp.feature_profile.presentation.profile.ProfileScreen
 
 @Composable
 fun Navigation(
@@ -63,7 +64,7 @@ fun Navigation(
                 HealthRecordsScreen()
             }
             composable(Screen.Profile.route) {
-                ProfileScreen()
+                ProfileScreen(navController = navController)
             }
             composable(
                 route = "add_edit_med_reminder?id={id}",
@@ -75,6 +76,9 @@ fun Navigation(
                 )
             ) {
                 AddEditMedReminderScreen(modifier = Modifier, navController = navController)
+            }
+            composable("edit_profile") {
+                EditProfileScreen(navController = navController)
             }
 
             navigation(
