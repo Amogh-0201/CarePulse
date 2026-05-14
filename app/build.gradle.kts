@@ -84,4 +84,7 @@ dependencies {
     //splash screen
     implementation("androidx.core:core-splashscreen:1.0.1")
 
+    //coil dependency for image viewing
+    implementation("io.coil-kt:coil-compose:2.6.0")
+
 }

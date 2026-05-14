@@ -143,7 +143,7 @@ class EditProfileViewModel @Inject constructor(
                 allergyInput.trim() !in allergies)
     }
 
-    suspend fun updateProfile() {
+    private suspend fun updateProfile() {
         useCases.saveProfileUseCase(
             Profile(
                 name = name,

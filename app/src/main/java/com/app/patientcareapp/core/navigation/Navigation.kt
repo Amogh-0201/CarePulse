@@ -12,7 +12,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.app.patientcareapp.core.util.Screen
-import com.app.patientcareapp.feature_health_records.presentation.HealthRecordsScreen
+import com.app.patientcareapp.feature_health_records.presentation.add_health_records.AddHealthRecordsScreen
+import com.app.patientcareapp.feature_health_records.presentation.health_record_viewer.HealthRecordViewerScreen
+import com.app.patientcareapp.feature_health_records.presentation.health_records.HealthRecordsScreen
 import com.app.patientcareapp.feature_home.presentation.HomeScreen
 import com.app.patientcareapp.feature_med_reminder.presentation.add_edit_med_reminders.AddEditMedReminderScreen
 import com.app.patientcareapp.feature_med_reminder.presentation.show_med_reminders.MedReminderScreen
@@ -61,7 +63,7 @@ fun Navigation(
                 MedReminderScreen(navController = navController)
             }
             composable(Screen.HealthRecords.route) {
-                HealthRecordsScreen()
+                HealthRecordsScreen(navController = navController)
             }
             composable(Screen.Profile.route) {
                 ProfileScreen(navController = navController)
@@ -79,6 +81,24 @@ fun Navigation(
             }
             composable("edit_profile") {
                 EditProfileScreen(navController = navController)
+            }
+            composable("add_health_record") {
+                AddHealthRecordsScreen(navController = navController)
+            }
+            composable(
+                route = "health_record_viewer/{id}",
+                arguments = listOf(
+                    navArgument("id") {
+                        type = NavType.LongType
+                    }
+                )
+            ) { backStackEntry ->
+                val id = backStackEntry.arguments?.getLong("id") ?: 0L
+
+                HealthRecordViewerScreen(
+                    navController = navController,
+                    recordId = id
+                )
             }
 
             navigation(

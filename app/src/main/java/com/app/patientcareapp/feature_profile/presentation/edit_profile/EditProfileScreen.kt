@@ -190,7 +190,8 @@ fun EditProfileScreen(
                     viewModel.onEvent(
                         EditProfileScreenEvents.OnRemoveCondition(it)
                     )
-                }
+                },
+                enabled = viewModel.isConditionInputValid()
             )
 
             EditableChipSection(
@@ -211,7 +212,8 @@ fun EditProfileScreen(
                     viewModel.onEvent(
                         EditProfileScreenEvents.OnRemoveAllergy(it)
                     )
-                }
+                },
+                enabled = viewModel.isAllergyInputValid()
             )
 
             Card(
@@ -290,7 +292,8 @@ fun EditableChipSection(
     input: String,
     onInputChange: (String) -> Unit,
     onAddClick: () -> Unit,
-    onRemove: (String) -> Unit
+    onRemove: (String) -> Unit,
+    enabled: Boolean
 ) {
 
     Card(
@@ -323,7 +326,8 @@ fun EditableChipSection(
                 Spacer(modifier = Modifier.padding(4.dp))
 
                 TextButton(
-                    onClick = onAddClick
+                    onClick = onAddClick,
+                    enabled = enabled
                 ) {
                     Text("Add")
                 }
