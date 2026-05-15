@@ -63,7 +63,6 @@ fun AddEditMedReminderScreen(
                     snackBarHostState.showSnackbar(event.message!!)
                 }
                 is AddEditMedReminderViewModel.UiEvent.SaveSuccess -> {
-                    snackBarHostState.showSnackbar("Saved Successfully")
                     navController.navigate(Screen.MedReminder.route) {
                         popUpTo("Add_Edit_MedReminder") { inclusive = true}
                     }
@@ -241,7 +240,7 @@ fun AddEditMedReminderScreen(
 
         //show time picker
         if(showTimePicker.value) {
-            val timePickerState = rememberTimePickerState()
+            val timePickerState = rememberTimePickerState(is24Hour = true)
 
             AlertDialog(
                 onDismissRequest = { showTimePicker.value = false},
@@ -250,7 +249,11 @@ fun AddEditMedReminderScreen(
                         onClick = {
                             val hour = timePickerState.hour
                             val minute = timePickerState.minute
-                            val formattedTime = String.format("%02d:%02d", hour, minute)
+                            val formattedTime = String.format(
+                                java.util.Locale.getDefault(),
+                                "%02d:%02d",
+                                hour, minute
+                            )
                             viewModel.onEvent(AddEditMedReminderEvents.OnTimesChange(
                                 viewModel.times + formattedTime
                             ))
