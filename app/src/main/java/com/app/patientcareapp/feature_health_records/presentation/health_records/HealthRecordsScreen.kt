@@ -25,11 +25,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -46,6 +50,8 @@ fun HealthRecordsScreen(
     viewModel: HealthRecordsViewModel = hiltViewModel()
 ) {
 
+    val snackBarHostState = remember { SnackbarHostState() }
+
     LaunchedEffect(true) {
         viewModel.uiEvent.collectLatest { event ->
             when(event) {
@@ -58,6 +64,15 @@ fun HealthRecordsScreen(
                     navController.navigate(
                         "health_record_viewer/${event.healthRecordId}"
                     )
+                }
+                is HealthRecordsViewModel.UiEvent.ShowSnackBar -> {
+                    val result = snackBarHostState.showSnackbar(
+                        message = event.message,
+                        actionLabel = "Undo"
+                    )
+                    if(result == SnackbarResult.ActionPerformed) {
+                        viewModel.onEvent(HealthRecordsScreenEvents.OnUndoDeleteHealthRecordClick)
+                    }
                 }
             }
         }
@@ -84,7 +99,8 @@ fun HealthRecordsScreen(
                     contentDescription = "Add Health Record"
                 )
             }
-        }
+        },
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
     ) { innerPadding ->
 
         LazyColumn(

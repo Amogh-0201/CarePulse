@@ -10,4 +10,5 @@ sealed class HealthRecordsScreenEvents {
     data class OnHealthRecordClick(val healthRecord: HealthRecord): HealthRecordsScreenEvents()
     data class OnDeleteHealthRecord(val healthRecord: HealthRecord): HealthRecordsScreenEvents()
     object OnAddHealthRecordClick: HealthRecordsScreenEvents()
+    object OnUndoDeleteHealthRecordClick: HealthRecordsScreenEvents()
 }

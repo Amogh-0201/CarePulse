@@ -40,7 +40,11 @@ class HealthRecordsViewModel @Inject constructor(
     sealed class UiEvent {
         object NavigateToAddHealthRecords: UiEvent()
         data class NavigateToHealthRecordViewer(val healthRecordId: Long): UiEvent()
+        data class ShowSnackBar(val message: String): UiEvent()
     }
+
+    var deletedHealthRecord by mutableStateOf<HealthRecord?>(null)
+        private set
 
     init {
         loadHealthRecords()
@@ -72,11 +76,20 @@ class HealthRecordsViewModel @Inject constructor(
             is HealthRecordsScreenEvents.OnDeleteHealthRecord -> {
                 viewModelScope.launch {
                     useCases.deleteHealthRecordUseCase(healthRecord = event.healthRecord)
+                    deletedHealthRecord = event.healthRecord
+                    _uiEvent.send(UiEvent.ShowSnackBar("Health Record deleted"))
                 }
             }
             is HealthRecordsScreenEvents.OnAddHealthRecordClick -> {
                 viewModelScope.launch {
                     _uiEvent.send(UiEvent.NavigateToAddHealthRecords)
+                }
+            }
+            is HealthRecordsScreenEvents.OnUndoDeleteHealthRecordClick -> {
+                viewModelScope.launch {
+                    deletedHealthRecord?.let {
+                        useCases.addHealthRecordUseCase(healthRecord = deletedHealthRecord!!)
+                    }
                 }
             }
         }
