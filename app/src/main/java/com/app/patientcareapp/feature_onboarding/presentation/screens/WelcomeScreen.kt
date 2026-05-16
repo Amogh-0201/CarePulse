@@ -38,10 +38,12 @@ fun WelcomeScreen(
 
     val bgGradient = Brush.verticalGradient(
         colors = listOf(
-            PrimaryBlue.copy(alpha = 0.15f),
-            SecondaryTeal.copy(alpha = 0.05f),
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+            MaterialTheme.colorScheme.secondary.copy(alpha = 0.05f),
             MaterialTheme.colorScheme.background
-        )
+        ),
+        startY = 0f,
+        endY = 1000f
     )
 
     Box(

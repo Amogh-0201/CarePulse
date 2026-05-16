@@ -61,8 +61,8 @@ fun HealthRecordsScreen(
 
     val bgGradient = Brush.verticalGradient(
         colors = listOf(
-            PrimaryBlue.copy(0.08f),
-            SecondaryTeal.copy(0.04f),
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+            MaterialTheme.colorScheme.secondary.copy(alpha = 0.05f),
             MaterialTheme.colorScheme.background
         )
     )
@@ -101,7 +101,7 @@ fun HealthRecordsScreen(
                         placeholder = { Text("Search records, hospitals...") },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
-                        leadingIcon = { Icon(Icons.Rounded.Search, null, tint = Color.Gray) },
+                        leadingIcon = { Icon(Icons.Rounded.Search, null, tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)) },
                         colors = OutlinedTextFieldDefaults.colors(
                             unfocusedContainerColor = MaterialTheme.colorScheme.surface.copy(0.7f),
                             focusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -233,15 +233,15 @@ fun HealthRecordCard(
                 )
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Rounded.CalendarToday, null, modifier = Modifier.size(12.dp), tint = Color.Gray)
+                    Icon(Icons.Rounded.CalendarToday, null, modifier = Modifier.size(12.dp), tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                     Spacer(Modifier.width(4.dp))
-                    Text(formattedDate, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                    Text(formattedDate, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
 
                     if (!record.hospitalName.isNullOrBlank()) {
                         Spacer(Modifier.width(8.dp))
-                        Icon(Icons.Rounded.Business, null, modifier = Modifier.size(12.dp), tint = Color.Gray)
+                        Icon(Icons.Rounded.Business, null, modifier = Modifier.size(12.dp), tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                         Spacer(Modifier.width(4.dp))
-                        Text(record.hospitalName, style = MaterialTheme.typography.bodySmall, color = Color.Gray, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(record.hospitalName, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                 }
             }
@@ -265,7 +265,7 @@ fun EmptyRecordsState() {
     ) {
         Icon(Icons.Rounded.HistoryEdu, null, modifier = Modifier.size(80.dp), tint = MaterialTheme.colorScheme.primary.copy(0.1f))
         Spacer(Modifier.height(16.dp))
-        Text("No health records found", color = Color.Gray, fontWeight = FontWeight.Medium)
+        Text("No health records found", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), fontWeight = FontWeight.Medium)
     }
 }
 

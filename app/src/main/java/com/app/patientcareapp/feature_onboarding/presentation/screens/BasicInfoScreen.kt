@@ -44,10 +44,12 @@ fun BasicInfoScreen(
 
     val bgGradient = Brush.verticalGradient(
         colors = listOf(
-            PrimaryBlue.copy(alpha = 0.08f),
-            SecondaryTeal.copy(alpha = 0.04f),
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+            MaterialTheme.colorScheme.secondary.copy(alpha = 0.05f),
             MaterialTheme.colorScheme.background
-        )
+        ),
+        startY = 0f,
+        endY = 1000f
     )
 
     Scaffold(
@@ -176,7 +178,7 @@ fun OnboardingProgress(currentStep: Int, totalSteps: Int) {
             Text(
                 text = "${(currentStep * 100 / totalSteps)}%",
                 style = MaterialTheme.typography.labelMedium,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
             )
         }
         Spacer(modifier = Modifier.height(8.dp))

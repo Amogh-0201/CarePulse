@@ -53,7 +53,13 @@ fun MedReminderScreen(
     }
 
     val bgGradient = Brush.verticalGradient(
-        colors = listOf(PrimaryBlue.copy(0.08f), SecondaryTeal.copy(0.04f), MaterialTheme.colorScheme.background)
+        colors = listOf(
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+            MaterialTheme.colorScheme.secondary.copy(alpha = 0.05f),
+            MaterialTheme.colorScheme.background
+        ),
+        startY = 0f,
+        endY = 1000f
     )
 
     Scaffold(
@@ -130,7 +136,7 @@ fun EnhancedMedReminderItem(
                 ) {
                     Icon(
                         Icons.Rounded.Medication, null,
-                        tint = if (isExpired || !reminder.isActive) Color.Gray else MaterialTheme.colorScheme.primary
+                        tint = if (isExpired || !reminder.isActive) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f) else MaterialTheme.colorScheme.primary
                     )
                 }
 
@@ -141,7 +147,7 @@ fun EnhancedMedReminderItem(
                         text = reminder.medicineName,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = if (isExpired) Color.Gray else MaterialTheme.colorScheme.onSurface
+                        color = if (isExpired) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSurface
                     )
                     Text(reminder.dosage, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(0.6f))
                 }
@@ -162,7 +168,7 @@ fun EnhancedMedReminderItem(
                         StatusBadge(
                             icon = Icons.Rounded.History,
                             text = "Inactive (Ended)",
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
                     }
                     !reminder.isActive -> {
@@ -195,7 +201,7 @@ fun EnhancedMedReminderItem(
                             text = time,
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
                             style = MaterialTheme.typography.labelLarge,
-                            color = if (isExpired) Color.Gray else MaterialTheme.colorScheme.primary,
+                            color = if (isExpired) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f) else MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold
                         )
                     }

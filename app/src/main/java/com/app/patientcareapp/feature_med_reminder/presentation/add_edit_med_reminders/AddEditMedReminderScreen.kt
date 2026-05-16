@@ -62,7 +62,13 @@ fun AddEditMedReminderScreen(
     )
 
     val bgGradient = Brush.verticalGradient(
-        colors = listOf(PrimaryBlue.copy(0.08f), SecondaryTeal.copy(0.04f), MaterialTheme.colorScheme.background)
+        colors = listOf(
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+            MaterialTheme.colorScheme.secondary.copy(alpha = 0.05f),
+            MaterialTheme.colorScheme.background
+        ),
+        startY = 0f,
+        endY = 1000f
     )
 
     Scaffold(
@@ -195,7 +201,7 @@ fun AddEditMedReminderScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text("Active Status", fontWeight = FontWeight.Bold)
-                            Text("Receive notifications for this medicine", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                            Text("Receive notifications for this medicine", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                         }
                         Switch(
                             checked = viewModel.isActive,
@@ -312,10 +318,10 @@ fun SelectionRow(label: String, value: String, icon: ImageVector, onClick: () ->
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(icon, null, tint = Color.Gray, modifier = Modifier.size(20.dp))
+        Icon(icon, null, tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), modifier = Modifier.size(20.dp))
         Spacer(Modifier.width(12.dp))
         Column {
-            Text(label, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+            Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
             Text(value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
         }
         Spacer(Modifier.weight(1f))

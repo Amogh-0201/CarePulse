@@ -49,9 +49,9 @@ fun HomeScreen(
     // --- Premium Mesh Background ---
     val bgGradient = Brush.verticalGradient(
         colors = listOf(
-            PrimaryBlue.copy(alpha = 0.08f), // Very faint blue at the top
-            SecondaryTeal.copy(alpha = 0.04f), // Fainter teal in middle
-            MaterialTheme.colorScheme.background // Fades into standard background
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+            MaterialTheme.colorScheme.secondary.copy(alpha = 0.05f),
+            MaterialTheme.colorScheme.background
         ),
         startY = 0f,
         endY = 1000f
@@ -182,7 +182,12 @@ private fun UpcomingMedicineMiniCard(
     modifier: Modifier,
     upcoming: HomeViewModel.UpcomingMedicine?
 ) {
-    val gradient = Brush.verticalGradient(listOf(PrimaryBlue, SecondaryTeal))
+    val gradient = Brush.verticalGradient(
+        listOf(
+            MaterialTheme.colorScheme.primary,
+            MaterialTheme.colorScheme.secondary
+        )
+    )
 
     Card(
         modifier = modifier.height(160.dp),

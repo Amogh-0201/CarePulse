@@ -13,42 +13,36 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryBlue,
-    secondary = SecondaryTeal,
-
-    background = AppBackground,
-    surface = SurfaceWhite,
-
+    primary = DarkPrimaryBlue,
+    secondary = DarkSecondaryTeal,
+    background = DarkBackground,
+    surface = DarkSurface,
     onPrimary = Color.White,
     onSecondary = Color.White,
-
-    onBackground = TextPrimary,
-    onSurface = TextPrimary,
-
-    error = ErrorRed
+    onBackground = DarkTextPrimary,
+    onSurface = DarkTextPrimary,
+    onSurfaceVariant = DarkTextSecondary,
+    error = ErrorRed,
+    outline = DarkTextSecondary.copy(alpha = 0.2f)
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = PrimaryBlue,
     secondary = SecondaryTeal,
-
     background = AppBackground,
     surface = SurfaceWhite,
-
     onPrimary = Color.White,
     onSecondary = Color.White,
-
     onBackground = TextPrimary,
     onSurface = TextPrimary,
-
     error = ErrorRed
 )
 
 @Composable
 fun PatientCareAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -56,7 +50,6 @@ fun PatientCareAppTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }

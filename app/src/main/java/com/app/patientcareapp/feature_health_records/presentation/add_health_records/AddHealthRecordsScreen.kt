@@ -65,8 +65,8 @@ fun AddHealthRecordsScreen(
 
     val bgGradient = Brush.verticalGradient(
         colors = listOf(
-            PrimaryBlue.copy(alpha = 0.08f),
-            SecondaryTeal.copy(alpha = 0.04f),
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+            MaterialTheme.colorScheme.secondary.copy(alpha = 0.05f),
             MaterialTheme.colorScheme.background
         )
     )
@@ -187,7 +187,7 @@ fun AddHealthRecordsScreen(
                                 fontWeight = FontWeight.Bold
                             )
                             if (isFileSelected) {
-                                Text("Tap again to change file", style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+                                Text("Tap again to change file", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                             }
                         }
                     }

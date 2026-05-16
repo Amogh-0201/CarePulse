@@ -9,10 +9,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.app.patientcareapp.core.navigation.Navigation
+import com.app.patientcareapp.core.presentation.BrandedSplashScreen
 import com.app.patientcareapp.feature_med_reminder.data.alarm.MedicineAlarmScheduler
 import com.app.patientcareapp.ui.theme.PatientCareAppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,9 +31,8 @@ class MainActivity : ComponentActivity() {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        splashScreen.setKeepOnScreenCondition {
-            viewModel.startDestination.value == null
-        }
+        // Hand over control to Compose immediately
+        splashScreen.setKeepOnScreenCondition { false }
 
         enableEdgeToEdge()
 
@@ -55,7 +58,13 @@ class MainActivity : ComponentActivity() {
 
                 val startDestination by viewModel.startDestination.collectAsState()
 
-                if(startDestination != null) {
+                var splashFinished by remember { mutableStateOf(false) }
+
+                if (!splashFinished || startDestination == null) {
+                    BrandedSplashScreen(
+                        onAnimationFinished = { splashFinished = true }
+                    )
+                } else {
                     Navigation(startDestination = startDestination!!)
                 }
             }

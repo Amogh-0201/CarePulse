@@ -51,8 +51,8 @@ fun HealthRecordViewerScreen(
 
     val bgGradient = Brush.verticalGradient(
         colors = listOf(
-            PrimaryBlue.copy(alpha = 0.08f),
-            SecondaryTeal.copy(alpha = 0.04f),
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+            MaterialTheme.colorScheme.secondary.copy(alpha = 0.05f),
             MaterialTheme.colorScheme.background
         )
     )
@@ -272,7 +272,7 @@ fun ViewerDetailRow(icon: ImageVector, label: String, value: String) {
         }
         Spacer(Modifier.width(16.dp))
         Column {
-            Text(label, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+            Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
             Text(value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
         }
     }

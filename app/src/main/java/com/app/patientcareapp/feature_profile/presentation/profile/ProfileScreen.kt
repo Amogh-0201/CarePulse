@@ -39,10 +39,12 @@ fun ProfileScreen(
 
     val bgGradient = Brush.verticalGradient(
         colors = listOf(
-            PrimaryBlue.copy(alpha = 0.08f),
-            SecondaryTeal.copy(alpha = 0.04f),
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+            MaterialTheme.colorScheme.secondary.copy(alpha = 0.05f),
             MaterialTheme.colorScheme.background
-        )
+        ),
+        startY = 0f,
+        endY = 1000f
     )
 
     Scaffold(
@@ -105,7 +107,7 @@ fun ProfileScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             if (viewModel.conditions.isEmpty() || viewModel.conditions.first() == "NA") {
-                                Text("No conditions reported", color = Color.Gray)
+                                Text("No conditions reported", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                             } else {
                                 viewModel.conditions.forEach { condition -> ProfileChip(text = condition) }
                             }
@@ -121,7 +123,7 @@ fun ProfileScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             if (viewModel.allergies.isEmpty() || viewModel.allergies.first() == "NA") {
-                                Text("No allergies reported", color = Color.Gray)
+                                Text("No allergies reported", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                             } else {
                                 viewModel.allergies.forEach { allergy -> ProfileChip(text = allergy, color = Color(0xFFF59E0B)) }
                             }
@@ -185,7 +187,7 @@ fun VitalDisplayItem(label: String, value: String, unit: String, icon: ImageVect
         }
         Column(horizontalAlignment = Alignment.End) {
             Text(if(value.isBlank() || value == "NA") "--" else value, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-            if (value.isNotBlank() && value != "NA") Text(unit, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+            if (value.isNotBlank() && value != "NA") Text(unit, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
         }
     }
 }

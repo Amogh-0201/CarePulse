@@ -20,8 +20,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.PatientCareApp">
+            android:theme="@style/Theme.PatientCareApp.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
