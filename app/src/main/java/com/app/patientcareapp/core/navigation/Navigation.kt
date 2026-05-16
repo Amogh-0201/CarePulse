@@ -50,14 +50,19 @@ fun Navigation(
                 AppNavBar(navController = navController)
             }
         }
-    ) {
+    ) { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = startDestination,
-            modifier = Modifier.padding(it)
+            modifier = Modifier.padding(innerPadding)
         ) {
             composable(Screen.Home.route) {
-                HomeScreen()
+                HomeScreen(
+                    paddingValues = innerPadding,
+                    onMedicineClick = { medId ->
+                        navController.navigate("add_edit_med_reminder?id=$medId")
+                    }
+                )
             }
             composable(Screen.MedReminder.route) {
                 MedReminderScreen(navController = navController)

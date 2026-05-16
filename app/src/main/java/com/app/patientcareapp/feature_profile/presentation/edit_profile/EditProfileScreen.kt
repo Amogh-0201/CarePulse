@@ -1,67 +1,55 @@
 package com.app.patientcareapp.feature_profile.presentation.edit_profile
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material.icons.rounded.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.app.patientcareapp.ui.theme.PrimaryBlue
+import com.app.patientcareapp.ui.theme.SecondaryTeal
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun EditProfileScreen(
     navController: NavController,
     viewModel: EditProfileViewModel = hiltViewModel()
 ) {
+    val snackBarHostState = remember { SnackbarHostState() }
 
-    val snackBarHostState = remember {
-        SnackbarHostState()
-    }
+    // Premium Mesh Background
+    val bgGradient = Brush.verticalGradient(
+        colors = listOf(
+            PrimaryBlue.copy(alpha = 0.08f),
+            SecondaryTeal.copy(alpha = 0.04f),
+            MaterialTheme.colorScheme.background
+        )
+    )
 
     LaunchedEffect(key1 = true) {
-
         viewModel.uiEvent.collect { event ->
-
-            when(event) {
-
+            when (event) {
                 is EditProfileViewModel.UiEvent.NavigateBackToProfileScreen -> {
                     navController.popBackStack()
                 }
-
                 is EditProfileViewModel.UiEvent.ShowSnackBar -> {
                     snackBarHostState.showSnackbar(event.message)
                 }
@@ -71,299 +59,247 @@ fun EditProfileScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-
-        snackbarHost = {
-            SnackbarHost(hostState = snackBarHostState)
-        },
-
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         topBar = {
-
             CenterAlignedTopAppBar(
-                title = {
-                    Text("Edit Profile")
-                },
-
+                title = { Text("Edit Profile", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            navController.popBackStack()
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = null
-                        )
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = "Back")
                     }
                 },
-
-                colors = TopAppBarDefaults.topAppBarColors()
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.Transparent
+                )
             )
         }
     ) { paddingValues ->
-
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(bgGradient)
                 .padding(paddingValues)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
-
-            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-
-            Card(
-                shape = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(4.dp)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
+                Spacer(modifier = Modifier.height(4.dp))
 
-                Column(
-                    modifier = Modifier.padding(20.dp)
+                // Immutable Info Card (Displays data that cannot be changed)
+                Card(
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
+                    ),
+                    elevation = CardDefaults.cardElevation(0.dp)
                 ) {
-
-                    Text(
-                        text = viewModel.name,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = buildString {
-                            append(viewModel.gender?.displayName ?: "NA")
-                            append(" | ")
-                            append(viewModel.bloodGroup?.displayName ?: "NA")
+                    Row(
+                        modifier = Modifier.padding(20.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .background(MaterialTheme.colorScheme.primary.copy(0.1f), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(Icons.Rounded.Lock, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                         }
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Text(
-                        text = "Basic info cannot be changed",
-                    )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Column {
+                            Text(
+                                text = viewModel.name,
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Text(
+                                text = "${viewModel.gender?.displayName} • ${viewModel.bloodGroup?.displayName}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            )
+                        }
+                    }
                 }
-            }
 
-            Card(
-                shape = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(4.dp)
-            ) {
-
-                Column(
-                    modifier = Modifier.padding(20.dp)
-                ) {
-
-                    Text(
-                        text = "Age",
-                        fontWeight = FontWeight.SemiBold
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
+                // Section: Age
+                PremiumEditCard(title = "Basic Information", icon = Icons.Rounded.Badge) {
                     OutlinedTextField(
                         value = viewModel.age?.toString() ?: "",
-                        onValueChange = {
-                            viewModel.onEvent(
-                                EditProfileScreenEvents.OnAgeChange(it)
-                            )
-                        },
+                        onValueChange = { viewModel.onEvent(EditProfileScreenEvents.OnAgeChange(it)) },
                         modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        label = { Text("Your Age") },
                         singleLine = true
                     )
                 }
-            }
 
-            EditableChipSection(
-                title = "Conditions",
-                items = viewModel.conditions,
-                input = viewModel.conditionInput,
-                onInputChange = {
-                    viewModel.onEvent(
-                        EditProfileScreenEvents.OnConditionInputChange(it)
-                    )
-                },
-                onAddClick = {
-                    viewModel.onEvent(
-                        EditProfileScreenEvents.OnAddConditionClick
-                    )
-                },
-                onRemove = {
-                    viewModel.onEvent(
-                        EditProfileScreenEvents.OnRemoveCondition(it)
-                    )
-                },
-                enabled = viewModel.isConditionInputValid()
-            )
+                // Section: Conditions
+                EditablePremiumChipSection(
+                    title = "Medical Conditions",
+                    icon = Icons.Rounded.HealthAndSafety,
+                    items = viewModel.conditions,
+                    input = viewModel.conditionInput,
+                    onInputChange = { viewModel.onEvent(EditProfileScreenEvents.OnConditionInputChange(it)) },
+                    onAddClick = { viewModel.onEvent(EditProfileScreenEvents.OnAddConditionClick) },
+                    onRemove = { viewModel.onEvent(EditProfileScreenEvents.OnRemoveCondition(it)) },
+                    enabled = viewModel.isConditionInputValid()
+                )
 
-            EditableChipSection(
-                title = "Allergies",
-                items = viewModel.allergies,
-                input = viewModel.allergyInput,
-                onInputChange = {
-                    viewModel.onEvent(
-                        EditProfileScreenEvents.OnAllergyInputChange(it)
-                    )
-                },
-                onAddClick = {
-                    viewModel.onEvent(
-                        EditProfileScreenEvents.OnAddAllergyClick
-                    )
-                },
-                onRemove = {
-                    viewModel.onEvent(
-                        EditProfileScreenEvents.OnRemoveAllergy(it)
-                    )
-                },
-                enabled = viewModel.isAllergyInputValid()
-            )
+                // Section: Allergies
+                EditablePremiumChipSection(
+                    title = "Allergies",
+                    icon = Icons.Rounded.WarningAmber,
+                    items = viewModel.allergies,
+                    input = viewModel.allergyInput,
+                    onInputChange = { viewModel.onEvent(EditProfileScreenEvents.OnAllergyInputChange(it)) },
+                    onAddClick = { viewModel.onEvent(EditProfileScreenEvents.OnAddAllergyClick) },
+                    onRemove = { viewModel.onEvent(EditProfileScreenEvents.OnRemoveAllergy(it)) },
+                    enabled = viewModel.isAllergyInputValid(),
+                    accentColor = Color(0xFFF59E0B) // Amber for warnings
+                )
 
-            Card(
-                shape = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(4.dp)
-            ) {
-
-                Column(
-                    modifier = Modifier.padding(20.dp)
-                ) {
-
-                    Text(
-                        text = "Vitals",
-                        fontWeight = FontWeight.SemiBold
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
+                // Section: Vitals
+                PremiumEditCard(title = "Standard Vitals", icon = Icons.Rounded.MonitorHeart) {
                     OutlinedTextField(
                         value = viewModel.bloodPressure,
-                        onValueChange = {
-                            viewModel.onEvent(
-                                EditProfileScreenEvents.OnBloodPressureChange(it)
-                            )
-                        },
+                        onValueChange = { viewModel.onEvent(EditProfileScreenEvents.OnBloodPressureChange(it)) },
+                        label = { Text("Blood Pressure (mmHg)") },
                         modifier = Modifier.fillMaxWidth(),
-                        label = {
-                            Text("Blood Pressure")
-                        },
-                        singleLine = true
+                        shape = RoundedCornerShape(16.dp),
+                        placeholder = { Text("e.g. 120/80") }
                     )
-
                     Spacer(modifier = Modifier.height(12.dp))
-
                     OutlinedTextField(
                         value = viewModel.sugar,
-                        onValueChange = {
-                            viewModel.onEvent(
-                                EditProfileScreenEvents.OnSugarChange(it)
-                            )
-                        },
+                        onValueChange = { viewModel.onEvent(EditProfileScreenEvents.OnSugarChange(it)) },
+                        label = { Text("Sugar Level (mg/dL)") },
                         modifier = Modifier.fillMaxWidth(),
-                        label = {
-                            Text("Sugar")
-                        },
-                        singleLine = true
+                        shape = RoundedCornerShape(16.dp),
+                        placeholder = { Text("e.g. 95") }
                     )
                 }
+
+                // Save Button
+                Button(
+                    onClick = { viewModel.onEvent(EditProfileScreenEvents.OnSaveChangesClick) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(58.dp),
+                    shape = RoundedCornerShape(18.dp),
+                    enabled = viewModel.isBasicInfoValid(),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+                ) {
+                    Text("Save Changes", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
             }
-
-            ElevatedButton(
-                onClick = {
-                    viewModel.onEvent(
-                        EditProfileScreenEvents.OnSaveChangesClick
-                    )
-                },
-
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-
-                enabled = viewModel.isBasicInfoValid()
-            ) {
-                Text("Save Changes")
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
 
 @Composable
-fun EditableChipSection(
+private fun PremiumEditCard(
     title: String,
+    icon: ImageVector,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(28.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(0.5.dp)
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(icon, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
+                Spacer(Modifier.width(8.dp))
+                Text(title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            content()
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun EditablePremiumChipSection(
+    title: String,
+    icon: ImageVector,
     items: List<String>,
     input: String,
     onInputChange: (String) -> Unit,
     onAddClick: () -> Unit,
     onRemove: (String) -> Unit,
-    enabled: Boolean
+    enabled: Boolean,
+    accentColor: Color = MaterialTheme.colorScheme.primary
 ) {
-
-    Card(
-        shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-
-        Column(
-            modifier = Modifier.padding(20.dp)
+    PremiumEditCard(title = title, icon = icon) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
         ) {
-
-            Text(
-                text = title,
-                fontWeight = FontWeight.SemiBold
+            OutlinedTextField(
+                value = input,
+                onValueChange = onInputChange,
+                modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(16.dp),
+                placeholder = { Text("Add new...") },
+                singleLine = true
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+            Spacer(modifier = Modifier.width(8.dp))
+            IconButton(
+                onClick = onAddClick,
+                enabled = enabled,
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = accentColor.copy(0.1f),
+                    contentColor = accentColor,
+                    disabledContainerColor = MaterialTheme.colorScheme.onSurface.copy(0.05f)
+                ),
+                modifier = Modifier.size(52.dp).clip(RoundedCornerShape(14.dp))
             ) {
-
-                OutlinedTextField(
-                    value = input,
-                    onValueChange = onInputChange,
-                    modifier = Modifier.weight(1f),
-                    singleLine = true
-                )
-
-                Spacer(modifier = Modifier.padding(4.dp))
-
-                TextButton(
-                    onClick = onAddClick,
-                    enabled = enabled
-                ) {
-                    Text("Add")
-                }
+                Icon(Icons.Rounded.Add, "Add")
             }
+        }
 
+        if (items.isNotEmpty()) {
             Spacer(modifier = Modifier.height(16.dp))
-
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
             ) {
-
                 items.forEach { item ->
-
-                    AssistChip(
+                    InputChip(
+                        selected = false,
                         onClick = { },
-
-                        label = {
-                            Text(item)
-                        },
-
+                        label = { Text(item, fontWeight = FontWeight.Medium) },
                         trailingIcon = {
-
-                            IconButton(
-                                onClick = {
-                                    onRemove(item)
-                                }
-                            ) {
-
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                            }
-                        }
+                            Icon(
+                                Icons.Rounded.Cancel,
+                                "Remove",
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .clickable { onRemove(item) }
+                            )
+                        },
+                        shape = CircleShape,
+                        // Fix: Explicitly pass enabled and selected states to the border function
+                        border = InputChipDefaults.inputChipBorder(
+                            selected = false,
+                            enabled = true,
+                            borderColor = accentColor.copy(alpha = 0.2f),
+                            borderWidth = 1.dp
+                        ),
+                        colors = InputChipDefaults.inputChipColors(
+                            labelColor = accentColor,
+                            trailingIconColor = accentColor
+                        )
                     )
                 }
             }

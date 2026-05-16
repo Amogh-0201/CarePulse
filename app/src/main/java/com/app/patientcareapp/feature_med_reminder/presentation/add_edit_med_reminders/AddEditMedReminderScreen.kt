@@ -1,80 +1,58 @@
 package com.app.patientcareapp.feature_med_reminder.presentation.add_edit_med_reminders
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.Button
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimePicker
-import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberTimePickerState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.icons.rounded.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.app.patientcareapp.core.util.Screen
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import javax.inject.Inject
+import com.app.patientcareapp.ui.theme.PrimaryBlue
+import com.app.patientcareapp.ui.theme.SecondaryTeal
 
-
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AddEditMedReminderScreen(
     navController: NavController,
     viewModel: AddEditMedReminderViewModel = hiltViewModel(),
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
-
     val snackBarHostState = remember { SnackbarHostState() }
+
     LaunchedEffect(true) {
-        viewModel.uiEvent.collect {event ->
-            when(event) {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
                 is AddEditMedReminderViewModel.UiEvent.ShowError -> {
-                    snackBarHostState.showSnackbar(event.message!!)
+                    snackBarHostState.showSnackbar(event.message ?: "An error occurred")
                 }
                 is AddEditMedReminderViewModel.UiEvent.SaveSuccess -> {
                     navController.navigate(Screen.MedReminder.route) {
-                        popUpTo("Add_Edit_MedReminder") { inclusive = true}
+                        popUpTo("Add_Edit_MedReminder") { inclusive = true }
                     }
                 }
             }
         }
     }
 
-
     val showTimePicker = remember { mutableStateOf(false) }
-    val showStartDatePicker = remember { mutableStateOf(false)}
-    val showEndDatePicker = remember { mutableStateOf(false)}
+    val showStartDatePicker = remember { mutableStateOf(false) }
+    val showEndDatePicker = remember { mutableStateOf(false) }
 
     val repeatOptions = listOf(
         "Daily" to "DAILY",
@@ -83,278 +61,266 @@ fun AddEditMedReminderScreen(
         "Weekly" to "WEEKLY"
     )
 
+    val bgGradient = Brush.verticalGradient(
+        colors = listOf(PrimaryBlue.copy(0.08f), SecondaryTeal.copy(0.04f), MaterialTheme.colorScheme.background)
+    )
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackBarHostState) },
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(viewModel.heading ?: "Med Reminder", fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Rounded.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.Transparent
+                )
+            )
+        },
         modifier = modifier.fillMaxSize()
     ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
-            Text(text = viewModel.heading!!)
+        Box(modifier = Modifier.fillMaxSize().background(bgGradient)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(horizontal = 20.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                Spacer(modifier = Modifier.height(4.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text("Basic Info")
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            MedTextField(
-                value = viewModel.name,
-                label = "Medicine Name*",
-                onValueChange = {
-                    viewModel.onEvent(AddEditMedReminderEvents.OnNameChange(it))
+                // Section 1: Basic Info
+                PremiumFormCard(title = "Medicine Details", icon = Icons.Rounded.Medication) {
+                    OutlinedTextField(
+                        value = viewModel.name,
+                        onValueChange = { viewModel.onEvent(AddEditMedReminderEvents.OnNameChange(it)) },
+                        label = { Text("Medicine Name*") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        leadingIcon = { Icon(Icons.Rounded.Label, null, tint = MaterialTheme.colorScheme.primary) }
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    OutlinedTextField(
+                        value = viewModel.dosage,
+                        onValueChange = { viewModel.onEvent(AddEditMedReminderEvents.OnDosageChange(it)) },
+                        label = { Text("Dosage (e.g., 1 tablet)*") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        leadingIcon = { Icon(Icons.Rounded.Opacity, null, tint = MaterialTheme.colorScheme.primary) }
+                    )
                 }
-            )
 
-            Spacer(modifier = Modifier.height(12.dp))
+                // Section 2: Timing
+                PremiumFormCard(title = "Schedule", icon = Icons.Rounded.CalendarToday) {
+                    SelectionRow(
+                        label = "Start Date*",
+                        value = viewModel.startDate?.let { formatDate(it) } ?: "Select Start Date",
+                        icon = Icons.Rounded.EventAvailable,
+                        onClick = { showStartDatePicker.value = true }
+                    )
 
-            MedTextField(
-                value = viewModel.dosage,
-                label = "Dosage*",
-                onValueChange = {
-                    viewModel.onEvent(AddEditMedReminderEvents.OnDosageChange(it))
-                }
-            )
+                    SelectionRow(
+                        label = "End Date (Optional)",
+                        value = viewModel.endDate?.let { formatDate(it) } ?: "Set duration",
+                        icon = Icons.Rounded.EventBusy,
+                        onClick = { showEndDatePicker.value = true }
+                    )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-            Text("Reminder Times*")
+                    Text("Reminder Times*", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Button(onClick = {
-                showTimePicker.value = true
-            }) {
-                Text("Add Time")
-            }
-
-            FlowRow {
-                viewModel.times.forEach {
-                    AssistChip(
-                        onClick = {},
-                        label = { Text(it) },
-                        trailingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Delete",
-                                modifier = Modifier.clickable(
-                                    onClick = {
-                                        viewModel.onEvent(AddEditMedReminderEvents.OnDeleteTime(time = it))
-                                    }
-                                )
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        viewModel.times.forEach { time ->
+                            AssistChip(
+                                onClick = { },
+                                label = { Text(time, fontWeight = FontWeight.Bold) },
+                                shape = CircleShape,
+                                colors = AssistChipDefaults.assistChipColors(
+                                    labelColor = MaterialTheme.colorScheme.primary,
+                                    containerColor = MaterialTheme.colorScheme.primary.copy(0.1f)
+                                ),
+                                trailingIcon = {
+                                    Icon(
+                                        Icons.Rounded.Cancel, "Delete",
+                                        modifier = Modifier.size(18.dp).clickable {
+                                            viewModel.onEvent(AddEditMedReminderEvents.OnDeleteTime(time))
+                                        }
+                                    )
+                                }
                             )
                         }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text("Start Date*")
-            Button(
-                onClick = {
-                    showStartDatePicker.value = true
-                }
-            ) {
-                Text(
-                    text = viewModel.startDate?.let {
-                        formatDate(it)
-                    }?: "Select Start Date"
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text("End Date")
-            Button(
-                onClick = {
-                    showEndDatePicker.value = true
-                }
-            ) {
-                Text(
-                    text = viewModel.endDate?.let {
-                        formatDate(it)
-                    }?: "Select End Date"
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text("Repeat*")
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            repeatOptions.forEach { (label, value) ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(
-                        selected = viewModel.repeatType == value,
-                        onClick = {
-                            viewModel.onEvent(AddEditMedReminderEvents.OnRepeatTypeChange(value))
-                        }
-                    )
-                    Text(text = label)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Reminder Active")
-                Spacer(modifier = Modifier.weight(1f))
-                Switch(
-                    checked = viewModel.isActive,
-                    onCheckedChange = {
-                        viewModel.onEvent(AddEditMedReminderEvents.OnIsActiveChange(it))
+                        // Add Time Button
+                        AssistChip(
+                            onClick = { showTimePicker.value = true },
+                            label = { Text("Add Time") },
+                            shape = CircleShape,
+                            leadingIcon = { Icon(Icons.Rounded.Add, null, modifier = Modifier.size(18.dp)) }
+                        )
                     }
+                }
+
+                // Section 3: Repeat Options
+                PremiumFormCard(title = "Recurrence", icon = Icons.Rounded.Update) {
+                    repeatOptions.forEach { (label, value) ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { viewModel.onEvent(AddEditMedReminderEvents.OnRepeatTypeChange(value)) }
+                                .padding(vertical = 4.dp)
+                        ) {
+                            RadioButton(
+                                selected = viewModel.repeatType == value,
+                                onClick = { viewModel.onEvent(AddEditMedReminderEvents.OnRepeatTypeChange(value)) }
+                            )
+                            Text(text = label, style = MaterialTheme.typography.bodyLarge)
+                        }
+                    }
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f) // Correct way to apply alpha
+                    )
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Active Status", fontWeight = FontWeight.Bold)
+                            Text("Receive notifications for this medicine", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                        }
+                        Switch(
+                            checked = viewModel.isActive,
+                            onCheckedChange = { viewModel.onEvent(AddEditMedReminderEvents.OnIsActiveChange(it)) }
+                        )
+                    }
+                }
+
+                // Section 4: Notes
+                OutlinedTextField(
+                    value = viewModel.notes,
+                    onValueChange = { viewModel.onEvent(AddEditMedReminderEvents.OnNotesChange(it)) },
+                    label = { Text("Notes & Instructions (Optional)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    minLines = 3,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                    )
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Button(
+                    onClick = { viewModel.onEvent(AddEditMedReminderEvents.OnSaveButtonClick) },
+                    modifier = Modifier.fillMaxWidth().height(58.dp),
+                    shape = RoundedCornerShape(18.dp),
+                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
+                ) {
+                    Icon(Icons.Rounded.Save, null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Save Reminder", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
             }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            OutlinedTextField(
-                value = viewModel.notes,
-                onValueChange = {
-                    viewModel.onEvent(AddEditMedReminderEvents.OnNotesChange(it))
-                },
-                label = { Text("Notes (optional)") },
-                modifier = Modifier.fillMaxWidth(),
-                maxLines = 4
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = {
-                    viewModel.onEvent(AddEditMedReminderEvents.OnSaveButtonClick)
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Save Reminder")
-            }
-
         }
 
-        //show time picker
-        if(showTimePicker.value) {
+        // --- Existing Dialog Logic (Maintained) ---
+        if (showTimePicker.value) {
             val timePickerState = rememberTimePickerState(is24Hour = true)
-
             AlertDialog(
-                onDismissRequest = { showTimePicker.value = false},
+                onDismissRequest = { showTimePicker.value = false },
                 confirmButton = {
-                    TextButton(
-                        onClick = {
-                            val hour = timePickerState.hour
-                            val minute = timePickerState.minute
-                            val formattedTime = String.format(
-                                java.util.Locale.getDefault(),
-                                "%02d:%02d",
-                                hour, minute
-                            )
-                            viewModel.onEvent(AddEditMedReminderEvents.OnTimesChange(
-                                viewModel.times + formattedTime
-                            ))
-                            showTimePicker.value = false
-                        }
-                    ) {
-                        Text("OK")
-                    }
+                    TextButton(onClick = {
+                        val formattedTime = String.format("%02d:%02d", timePickerState.hour, timePickerState.minute)
+                        viewModel.onEvent(AddEditMedReminderEvents.OnTimesChange(viewModel.times + formattedTime))
+                        showTimePicker.value = false
+                    }) { Text("Confirm") }
                 },
-                dismissButton = {
-                    TextButton(
-                        onClick = {showTimePicker.value = false}
-                    ) {
-                        Text("Cancel")
-                    }
-                },
-                text = {
-                    TimePicker(state = timePickerState)
-                }
+                dismissButton = { TextButton(onClick = { showTimePicker.value = false }) { Text("Cancel") } },
+                text = { TimePicker(state = timePickerState) }
             )
         }
 
-        //show start date picker
-        if(showStartDatePicker.value) {
+        if (showStartDatePicker.value) {
             val datePickerState = rememberDatePickerState()
-
             DatePickerDialog(
-                onDismissRequest = { showStartDatePicker.value = false},
+                onDismissRequest = { showStartDatePicker.value = false },
                 confirmButton = {
-                    TextButton(
-                        onClick = {
-                            datePickerState.selectedDateMillis?.let {
-                                viewModel.onEvent(AddEditMedReminderEvents.OnStartDateChange(it))
-                            }
-                            showStartDatePicker.value = false
-                        }
-                    ) {
-                        Text("OK")
-                    }
+                    TextButton(onClick = {
+                        datePickerState.selectedDateMillis?.let { viewModel.onEvent(AddEditMedReminderEvents.OnStartDateChange(it)) }
+                        showStartDatePicker.value = false
+                    }) { Text("OK") }
                 },
-                dismissButton = {
-                    TextButton(
-                        onClick = {
-                            showStartDatePicker.value = false
-                        }
-                    ) {
-                        Text("Cancel")
-                    }
-                }
-            ) {
-                DatePicker(state = datePickerState)
-            }
+                dismissButton = { TextButton(onClick = { showStartDatePicker.value = false }) { Text("Cancel") } }
+            ) { DatePicker(state = datePickerState) }
         }
 
-        //show end date picker
-        if(showEndDatePicker.value) {
+        if (showEndDatePicker.value) {
             val datePickerState = rememberDatePickerState()
-
             DatePickerDialog(
-                onDismissRequest = { showEndDatePicker.value = false},
+                onDismissRequest = { showEndDatePicker.value = false },
                 confirmButton = {
-                    TextButton(
-                        onClick = {
-                            datePickerState.selectedDateMillis?.let {
-                                viewModel.onEvent(AddEditMedReminderEvents.OnEndDateChange(it))
-                            }
-                            showEndDatePicker.value = false
-                        }
-                    ) {
-                        Text("OK")
-                    }
+                    TextButton(onClick = {
+                        datePickerState.selectedDateMillis?.let { viewModel.onEvent(AddEditMedReminderEvents.OnEndDateChange(it)) }
+                        showEndDatePicker.value = false
+                    }) { Text("OK") }
                 },
-                dismissButton = {
-                    TextButton(
-                        onClick = {
-                            showEndDatePicker.value = false
-                        }
-                    ) {
-                        Text("Cancel")
-                    }
-                }
-            ) {
-                DatePicker(state = datePickerState)
-            }
+                dismissButton = { TextButton(onClick = { showEndDatePicker.value = false }) { Text("Cancel") } }
+            ) { DatePicker(state = datePickerState) }
         }
     }
 }
 
-//helper functions
 @Composable
-fun MedTextField(
-    value: String,
-    label: String,
-    onValueChange: (String) -> Unit
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        modifier = Modifier.fillMaxWidth()
-    )
+fun PremiumFormCard(title: String, icon: ImageVector, content: @Composable ColumnScope.() -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp)
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(icon, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
+                Spacer(Modifier.width(8.dp))
+                Text(text = title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            content()
+        }
+    }
+}
+
+@Composable
+fun SelectionRow(label: String, value: String, icon: ImageVector, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .clickable { onClick() }
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(icon, null, tint = Color.Gray, modifier = Modifier.size(20.dp))
+        Spacer(Modifier.width(12.dp))
+        Column {
+            Text(label, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+            Text(value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
+        }
+        Spacer(Modifier.weight(1f))
+        Icon(Icons.Rounded.ChevronRight, null, tint = Color.LightGray)
+    }
 }
 
 fun formatDate(millis: Long): String {

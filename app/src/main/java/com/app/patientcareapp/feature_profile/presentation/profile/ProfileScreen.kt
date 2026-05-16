@@ -1,36 +1,26 @@
 package com.app.patientcareapp.feature_profile.presentation.profile
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material.icons.rounded.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.app.patientcareapp.ui.theme.PrimaryBlue
+import com.app.patientcareapp.ui.theme.SecondaryTeal
 
 @Composable
 fun ProfileScreen(
@@ -47,126 +37,95 @@ fun ProfileScreen(
         }
     }
 
+    val bgGradient = Brush.verticalGradient(
+        colors = listOf(
+            PrimaryBlue.copy(alpha = 0.08f),
+            SecondaryTeal.copy(alpha = 0.04f),
+            MaterialTheme.colorScheme.background
+        )
+    )
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    viewModel.onEvent(
-                        ProfileScreenEvents.OnEditProfileClick
-                    )
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "Edit Profile"
-                )
-            }
+            ExtendedFloatingActionButton(
+                onClick = { viewModel.onEvent(ProfileScreenEvents.OnEditProfileClick) },
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = Color.White,
+                shape = RoundedCornerShape(20.dp),
+                icon = { Icon(Icons.Rounded.Edit, "Edit") },
+                text = { Text("Edit Profile", fontWeight = FontWeight.Bold) }
+            )
         }
     ) { paddingValues ->
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .background(bgGradient)
+            .padding(paddingValues)) {
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-
-            item {
-
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    elevation = CardDefaults.cardElevation(
-                        defaultElevation = 4.dp
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 100.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                item {
+                    ProfileHeader(
+                        name = viewModel.name,
+                        age = viewModel.age,
+                        gender = viewModel.gender?.displayName,
+                        bloodGroup = viewModel.bloodGroup?.displayName
                     )
-                ) {
+                }
 
-                    Column(
-                        modifier = Modifier.padding(20.dp)
-                    ) {
-
-                        Text(
-                            text = viewModel.name,
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold
+                item {
+                    PremiumProfileCard(title = "Health Vitals", icon = Icons.Rounded.MonitorHeart) {
+                        VitalDisplayItem(
+                            label = "Blood Pressure",
+                            value = viewModel.bloodPressure,
+                            unit = "mmHg",
+                            icon = Icons.Rounded.Bloodtype,
+                            iconColor = Color(0xFFEF4444)
                         )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = buildString {
-                                append(viewModel.age ?: "NA")
-                                append(" | ")
-                                append(viewModel.gender?.displayName ?: "NA")
-                                append(" | ")
-                                append(viewModel.bloodGroup?.displayName ?: "NA")
-                            },
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
+                        VitalDisplayItem(
+                            label = "Sugar Level",
+                            value = viewModel.sugar,
+                            unit = "mg/dL",
+                            icon = Icons.Rounded.Opacity,
+                            iconColor = Color(0xFF3B82F6)
                         )
                     }
                 }
-            }
 
-            item {
-                ProfileSection(
-                    title = "Conditions",
-                    items = viewModel.conditions
-                )
-            }
-
-            item {
-                ProfileSection(
-                    title = "Allergies",
-                    items = viewModel.allergies
-                )
-            }
-
-            item {
-
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    elevation = CardDefaults.cardElevation(
-                        defaultElevation = 4.dp
-                    )
-                ) {
-
-                    Column(
-                        modifier = Modifier.padding(20.dp)
-                    ) {
-
-                        Text(
-                            text = "Vitals",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.SemiBold
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        VitalItem(
-                            label = "BP",
-                            value = if(viewModel.bloodPressure.isNotBlank()) {
-                                "${viewModel.bloodPressure} mmHg"
+                item {
+                    PremiumProfileCard(title = "Medical Conditions", icon = Icons.Rounded.HealthAndSafety) {
+                        FlowRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            if (viewModel.conditions.isEmpty() || viewModel.conditions.first() == "NA") {
+                                Text("No conditions reported", color = Color.Gray)
                             } else {
-                                "NA"
+                                viewModel.conditions.forEach { condition -> ProfileChip(text = condition) }
                             }
-                        )
+                        }
+                    }
+                }
 
-                        HorizontalDivider(
-                            modifier = Modifier.padding(vertical = 12.dp)
-                        )
-
-                        VitalItem(
-                            label = "Sugar",
-                            value = if(viewModel.sugar.isNotBlank()) {
-                                "${viewModel.sugar} mg/dL"
+                item {
+                    PremiumProfileCard(title = "Allergies", icon = Icons.Rounded.WarningAmber) {
+                        FlowRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            if (viewModel.allergies.isEmpty() || viewModel.allergies.first() == "NA") {
+                                Text("No allergies reported", color = Color.Gray)
                             } else {
-                                "NA"
+                                viewModel.allergies.forEach { allergy -> ProfileChip(text = allergy, color = Color(0xFFF59E0B)) }
                             }
-                        )
+                        }
                     }
                 }
             }
@@ -174,83 +133,73 @@ fun ProfileScreen(
     }
 }
 
-//helper functions
 @Composable
-fun ProfileSection(
-    title: String,
-    items: List<String>
-) {
+fun ProfileHeader(name: String, age: Int?, gender: String?, bloodGroup: String?) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier.size(100.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary.copy(0.1f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(Icons.Rounded.Person, null, modifier = Modifier.size(60.dp), tint = MaterialTheme.colorScheme.primary)
+        }
+        Spacer(Modifier.height(16.dp))
+        Text(name.ifBlank { "User" }, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
+        Spacer(Modifier.height(8.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            InfoTag(text = age?.let { "$it Years" } ?: "Age NA")
+            InfoTag(text = gender ?: "Gender NA")
+            InfoTag(text = bloodGroup ?: "BG NA", color = Color(0xFFEF4444))
+        }
+    }
+}
 
+@Composable
+fun PremiumProfileCard(title: String, icon: ImageVector, content: @Composable ColumnScope.() -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
-        )
+        shape = RoundedCornerShape(28.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(0.5.dp)
     ) {
-
-        Column(
-            modifier = Modifier.padding(20.dp)
-        ) {
-
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            items.forEach { item ->
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(50))
-                            .background(
-                                MaterialTheme.colorScheme.primary
-                            )
-                            .padding(4.dp)
-                    )
-
-                    Spacer(modifier = Modifier.padding(6.dp))
-
-                    Text(
-                        text = item,
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
+        Column(modifier = Modifier.padding(20.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(icon, null, modifier = Modifier.size(20.dp), tint = MaterialTheme.colorScheme.primary)
+                Spacer(Modifier.width(8.dp))
+                Text(title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
             }
+            Spacer(Modifier.height(16.dp))
+            content()
         }
     }
 }
 
 @Composable
-fun VitalItem(
-    label: String,
-    value: String
-) {
+fun VitalDisplayItem(label: String, value: String, unit: String, icon: ImageVector, iconColor: Color) {
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(modifier = Modifier.size(40.dp).clip(RoundedCornerShape(12.dp)).background(iconColor.copy(0.1f)), contentAlignment = Alignment.Center) {
+                Icon(icon, null, modifier = Modifier.size(20.dp), tint = iconColor)
+            }
+            Spacer(Modifier.width(12.dp))
+            Text(label, fontWeight = FontWeight.Medium)
+        }
+        Column(horizontalAlignment = Alignment.End) {
+            Text(if(value.isBlank() || value == "NA") "--" else value, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            if (value.isNotBlank() && value != "NA") Text(unit, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+        }
+    }
+}
 
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
+@Composable
+fun ProfileChip(text: String, color: Color = MaterialTheme.colorScheme.primary) {
+    Surface(shape = CircleShape, color = color.copy(0.05f), border = androidx.compose.foundation.BorderStroke(1.dp, color.copy(0.1f))) {
+        Text(text, modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), style = MaterialTheme.typography.labelLarge, color = color, fontWeight = FontWeight.Bold)
+    }
+}
 
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium
-        )
-
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyLarge
-        )
+@Composable
+fun InfoTag(text: String, color: Color = MaterialTheme.colorScheme.primary) {
+    Surface(color = color.copy(0.1f), shape = RoundedCornerShape(8.dp)) {
+        Text(text, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), style = MaterialTheme.typography.labelMedium, color = color, fontWeight = FontWeight.Bold)
     }
 }

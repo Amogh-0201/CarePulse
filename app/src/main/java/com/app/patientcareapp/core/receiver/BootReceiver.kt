@@ -6,6 +6,7 @@ import android.content.Intent
 import com.app.patientcareapp.feature_med_reminder.data.alarm.MedReminderAlarmManager
 import com.app.patientcareapp.feature_med_reminder.data.alarm.MedicineAlarmScheduler
 import com.app.patientcareapp.feature_med_reminder.domain.use_case.MedReminderUseCases
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -13,6 +14,8 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
+@AndroidEntryPoint
 class BootReceiver: BroadcastReceiver() {
 
     @Inject

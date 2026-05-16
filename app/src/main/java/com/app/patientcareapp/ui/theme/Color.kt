@@ -2,10 +2,22 @@ package com.app.patientcareapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// Primary Brand Colors
+val PrimaryBlue = Color(0xFF2563EB)
+val SecondaryTeal = Color(0xFF06B6D4)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+// Backgrounds
+val AppBackground = Color(0xFFF8FAFC)
+val SurfaceWhite = Color(0xFFFFFFFF)
+
+// Text Colors
+val TextPrimary = Color(0xFF0F172A)
+val TextSecondary = Color(0xFF64748B)
+
+// Status Colors
+val SuccessGreen = Color(0xFF10B981)
+val ErrorRed = Color(0xFFEF4444)
+
+// Optional Accent Colors
+val LightBlue = Color(0xFFDBEAFE)
+val LightTeal = Color(0xFFCFFAFE)

@@ -1,6 +1,7 @@
 package com.app.patientcareapp.feature_med_reminder.presentation.add_edit_med_reminders
 
 import android.app.Application
+import android.icu.util.Calendar
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -88,7 +89,14 @@ class AddEditMedReminderViewModel @Inject constructor(
                 startDate = event.startDate
             }
             is AddEditMedReminderEvents.OnEndDateChange -> {
-                endDate = event.endDate
+                // Set time to 23:59:59 to include the last day's doses
+                val calendar = Calendar.getInstance().apply {
+                    timeInMillis = event.endDate ?: 0L
+                    set(Calendar.HOUR_OF_DAY, 23)
+                    set(Calendar.MINUTE, 59)
+                    set(Calendar.SECOND, 59)
+                }
+                endDate = calendar.timeInMillis
             }
             is AddEditMedReminderEvents.OnRepeatTypeChange -> {
                 repeatType = event.repeatType
