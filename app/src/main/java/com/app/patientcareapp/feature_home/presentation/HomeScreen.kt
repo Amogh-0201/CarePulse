@@ -10,22 +10,43 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.app.patientcareapp.core.util.BatteryOptimizationHelper
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
+
+    val context = LocalContext.current
+
+    val isPreferenceDismissed by viewModel.isBatteryWarningDismissed.collectAsState()
+
+    var isSystemOptimizingBattery by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = true) {
+        isSystemOptimizingBattery = !BatteryOptimizationHelper.isIgnoringBatteryOptimizations(context)
+    }
+
 
     Scaffold(
         modifier = Modifier.fillMaxSize()
@@ -228,6 +249,65 @@ fun HomeScreen(
                             medicine.times.forEach { time ->
 
                                 Text(text = time)
+                            }
+                        }
+                    }
+                }
+            }
+
+            //battery optimization disable request
+            if (isSystemOptimizingBattery && !isPreferenceDismissed) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                text = "Action Required: Fix Delayed Alarms",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+
+                            Spacer(modifier = Modifier.height(6.dp))
+
+                            Text(
+                                text = "Your device might delay or skip your medicine reminders to save battery power. " +
+                                        "Please change settings to ensure accurate schedules." +
+                                        " Go to allow background activity -> unrestricted",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                TextButton(
+                                    onClick = { viewModel.dismissBatteryWarning() }
+                                ) {
+                                    Text(
+                                        text = "Dismiss",
+                                        color = MaterialTheme.colorScheme.onErrorContainer
+                                    )
+                                }
+
+                                Button(
+                                    onClick = {
+                                        BatteryOptimizationHelper.openBatteryOptimizationSettings(context)
+                                    }
+                                ) {
+                                    Text(text = "Fix Settings")
+                                }
                             }
                         }
                     }

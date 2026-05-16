@@ -6,12 +6,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.patientcareapp.core.data.preferences.PreferenceManager
 import com.app.patientcareapp.feature_health_records.domain.use_case.HealthRecordUseCases
 import com.app.patientcareapp.feature_med_reminder.domain.model.MedReminder
 import com.app.patientcareapp.feature_med_reminder.domain.use_case.MedReminderUseCases
 import com.app.patientcareapp.feature_profile.domain.use_case.ProfileUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -22,7 +25,8 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val profileUseCases: ProfileUseCases,
     private val medReminderUseCases: MedReminderUseCases,
-    private val healthRecordUseCases: HealthRecordUseCases
+    private val healthRecordUseCases: HealthRecordUseCases,
+    private val preferenceManager: PreferenceManager
 ): ViewModel() {
 
     var userName by mutableStateOf("")
@@ -39,6 +43,15 @@ class HomeViewModel @Inject constructor(
 
     var totalHealthRecords by mutableIntStateOf(0)
         private set
+
+    val isBatteryWarningDismissed = preferenceManager.isBatteryWarningDismissed
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
+    fun dismissBatteryWarning() {
+        viewModelScope.launch {
+            preferenceManager.setBatteryWarningDismissed(true)
+        }
+    }
 
     init {
         loadProfile()

@@ -11,8 +11,8 @@ class MedReminderRepositoryImpl @Inject constructor(
     private val dao: MedReminderDao
 ): MedReminderRepository {
 
-    override suspend fun saveMedReminder(medReminder: MedReminder) {
-        dao.saveMedReminder(medReminder.toMedReminderEntity())
+    override suspend fun saveMedReminder(medReminder: MedReminder): Long {
+        return dao.saveMedReminder(medReminder.toMedReminderEntity())
     }
 
     override fun getAllMedReminders(): Flow<List<MedReminder>> = flow {

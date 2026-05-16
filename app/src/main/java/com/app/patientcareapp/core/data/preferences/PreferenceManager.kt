@@ -13,6 +13,7 @@ class PreferenceManager(
 
     companion object {
         private val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
+        private val BATTERY_WARNING_DISMISSED = booleanPreferencesKey("battery_warning_dismissed")
     }
 
     val isOnBoardingCompleted: Flow<Boolean> = context.datastore.data
@@ -26,4 +27,16 @@ class PreferenceManager(
         }
     }
 
+    // Read state: Has user resolved/dismissed the warning?
+    val isBatteryWarningDismissed: Flow<Boolean> = context.datastore.data
+        .map { preferences ->
+            preferences[BATTERY_WARNING_DISMISSED] ?: false
+        }
+
+    // Write state
+    suspend fun setBatteryWarningDismissed(dismissed: Boolean) {
+        context.datastore.edit { preferences ->
+            preferences[BATTERY_WARNING_DISMISSED] = dismissed
+        }
+    }
 }

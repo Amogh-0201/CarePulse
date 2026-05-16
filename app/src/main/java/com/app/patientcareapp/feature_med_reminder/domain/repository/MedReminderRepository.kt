@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface MedReminderRepository {
 
-    suspend fun saveMedReminder(medReminder: MedReminder)
+    suspend fun saveMedReminder(medReminder: MedReminder): Long
 
     fun getAllMedReminders(): Flow<List<MedReminder>>
 

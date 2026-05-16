@@ -1,11 +1,14 @@
 package com.app.patientcareapp.feature_med_reminder.presentation.add_edit_med_reminders
 
+import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.patientcareapp.feature_med_reminder.data.alarm.MedReminderAlarmManager
+import com.app.patientcareapp.feature_med_reminder.data.alarm.MedicineAlarmScheduler
 import com.app.patientcareapp.feature_med_reminder.domain.model.MedReminder
 import com.app.patientcareapp.feature_med_reminder.domain.use_case.MedReminderUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,8 +21,13 @@ import javax.inject.Inject
 @HiltViewModel
 class AddEditMedReminderViewModel @Inject constructor(
     private val useCases: MedReminderUseCases,
+    application: Application,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
+
+    private val alarmManager = MedReminderAlarmManager(
+        MedicineAlarmScheduler(application)
+    )
 
     private var currentId: Int? = null
 
@@ -107,19 +115,35 @@ class AddEditMedReminderViewModel @Inject constructor(
                 return@launch
             }
             try {
-                useCases.saveMedReminderUseCase(
-                    MedReminder(
-                        id = currentId,
-                        medicineName =name,
-                        dosage = dosage,
-                        times = times,
-                        startDate = startDate!!,
-                        endDate = endDate,
-                        repeatType = repeatType,
-                        isActive = isActive,
-                        notes = notes
-                    )
+
+                if (currentId != null) {
+                    // Retrieve the prior version from DB to capture previous time counts
+                    val oldReminder = useCases.getMedReminderUseCase(currentId!!)
+                    oldReminder?.let { alarmManager.cancelMedReminder(it) }
+                }
+
+                val reminder = MedReminder(
+                    id = currentId,
+                    medicineName =name,
+                    dosage = dosage,
+                    times = times,
+                    startDate = startDate!!,
+                    endDate = endDate,
+                    repeatType = repeatType,
+                    isActive = isActive,
+                    notes = notes
                 )
+
+                val insertedId = useCases.saveMedReminderUseCase(reminder)
+
+                val savedReminder = reminder.copy(
+                    id = insertedId.toInt()
+                )
+
+                if (savedReminder.isActive) {
+                    alarmManager.scheduleMedReminder(savedReminder)
+                }
+
                 _uiEvent.emit(UiEvent.SaveSuccess)
             } catch (e: Exception) {
                 _uiEvent.emit(UiEvent.ShowError(e.message))

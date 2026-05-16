@@ -7,7 +7,7 @@ import javax.inject.Inject
 class SaveMedReminderUseCase @Inject constructor(
     private val repository: MedReminderRepository
 ) {
-    suspend operator fun invoke(medReminder: MedReminder) {
-        repository.saveMedReminder(medReminder)
+    suspend operator fun invoke(medReminder: MedReminder): Long {
+        return repository.saveMedReminder(medReminder)
     }
 }

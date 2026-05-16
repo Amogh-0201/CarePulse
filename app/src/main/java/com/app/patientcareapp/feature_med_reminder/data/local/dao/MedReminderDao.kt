@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 interface MedReminderDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun saveMedReminder(medReminder: MedReminderEntity)
+    suspend fun saveMedReminder(medReminder: MedReminderEntity): Long
 
     @Query("SELECT * FROM med_reminders")
     fun getAllMedReminders(): Flow<List<MedReminderEntity>>
