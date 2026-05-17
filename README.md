@@ -77,7 +77,11 @@ The initial release **CarePulse v1.0.0** is now available.
 
 ## 🛡️ License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is proprietary and strictly confidential. All rights reserved.
+
+No part of this repository, source code, or assets (including UI designs and text) may be copied, reproduced, distributed, or transmitted in any form or by any means, including modification or commercial use, without the explicit written permission of the owner.
+
+Forking this repository for personal viewing and educational reference is permitted under GitHub's Terms of Service, but no license is granted for deployment, redistribution, or modification.
 
 ---
 *Developed with ❤️ by Amogh*
