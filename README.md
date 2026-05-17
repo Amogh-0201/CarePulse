@@ -35,11 +35,9 @@ CarePulse is a modern, comprehensive medical management application built to hel
 
 ## 📸 Screenshots
 
-| Home Dashboard | Medication Schedule | Health Records | User Profile |
-| :---: | :---: | :---: | :---: |
-| <img src="screenshots/home.jpg" width="200" /> | <img src="screenshots/meds.jpg" width="200" /> | <img src="screenshots/records.jpg" width="200" /> | <img src="screenshots/profile.jpg" width="200" /> |
-
-*(Note: Create a folder named `screenshots` in your repo and rename your images to home.jpg, meds.jpg, records.jpg, and profile.jpg)*
+|                     Home Dashboard                     |                      Medication Schedule                       |                          Health Records                          |                       User Profile                        |
+|:------------------------------------------------------:|:--------------------------------------------------------------:|:----------------------------------------------------------------:|:---------------------------------------------------------:|
+| <img src="CarePulseSS/home_screen.jpeg" width="200" /> | <img src="CarePulseSS/med_reminder_screen.jpeg" width="200" /> | <img src="CarePulseSS/health_records_screen.jpeg" width="200" /> | <img src="CarePulseSS/profile_screen.jpeg" width="200" /> |
 
 ---
 
