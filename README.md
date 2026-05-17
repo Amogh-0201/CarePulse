@@ -2,6 +2,8 @@
 **Your Health, Our Responsibility**
 
 CarePulse is a modern, comprehensive medical management application built to help patients stay on top of their health journey. With a focus on ease of use and premium aesthetics, CarePulse simplifies medication adherence and medical record keeping.
+
+
 [![Platform](https://img.shields.io/badge/Platform-Android-green.svg)](https://developer.android.com)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.2.10-blue.svg)](https://kotlinlang.org)
 [![Compose](https://img.shields.io/badge/UI-Jetpack%20Compose-orange.svg)](https://developer.android.com/jetpack/compose)
