@@ -25,12 +25,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.app.patientcareapp.core.util.BatteryOptimizationHelper
+import com.app.patientcareapp.core.util.Screen
 import com.app.patientcareapp.ui.theme.PrimaryBlue
 import com.app.patientcareapp.ui.theme.SecondaryTeal
 
 @Composable
 fun HomeScreen(
+    navController: NavController,
     viewModel: HomeViewModel = hiltViewModel(),
     paddingValues: PaddingValues,
     onMedicineClick: (Int) -> Unit
@@ -69,7 +73,16 @@ fun HomeScreen(
                     paddingValues = paddingValues,
                     isSystemOptimizingBattery = isSystemOptimizingBattery,
                     isPreferenceDismissed = isPreferenceDismissed,
-                    onMedicineClick = onMedicineClick
+                    onMedicineClick = onMedicineClick,
+                    onProfileClick = {
+                        navController.navigate(Screen.Profile.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
                 )
             }
         }
@@ -82,7 +95,8 @@ private fun HomeScreenContent(
     paddingValues: PaddingValues,
     isSystemOptimizingBattery: Boolean,
     isPreferenceDismissed: Boolean,
-    onMedicineClick: (Int) -> Unit
+    onMedicineClick: (Int) -> Unit,
+    onProfileClick: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -95,7 +109,7 @@ private fun HomeScreenContent(
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         // 1. Premium Header
-        item { HeaderSection(userName = viewModel.userName) }
+        item { HeaderSection(userName = viewModel.userName, onProfileClick = onProfileClick) }
 
         if (isSystemOptimizingBattery && !isPreferenceDismissed) {
             item { BatteryWarningCard(onDismiss = { viewModel.dismissBatteryWarning() }) }
@@ -145,7 +159,10 @@ private fun HomeScreenContent(
 }
 
 @Composable
-private fun HeaderSection(userName: String) {
+private fun HeaderSection(
+    userName: String,
+    onProfileClick: () -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -169,7 +186,8 @@ private fun HeaderSection(userName: String) {
             modifier = Modifier
                 .size(52.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
+                .clickable(onClick = onProfileClick),
             contentAlignment = Alignment.Center
         ) {
             Icon(Icons.Rounded.Person, null, tint = MaterialTheme.colorScheme.primary)
@@ -244,25 +262,64 @@ private fun MedicineItemCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick), // Make the card interactive
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(24.dp), // Slightly more rounded for premium feel
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.padding(12.dp), // Tighter padding for a cleaner look
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Refined Icon Container
             Box(
-                modifier = Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)).background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
+                modifier = Modifier
+                    .size(56.dp) // Slightly larger
+                    .clip(RoundedCornerShape(16.dp)) // Matching rounding ratio
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Rounded.Medication, null, tint = MaterialTheme.colorScheme.primary)
+                Icon(
+                    imageVector = Icons.Rounded.Medication,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(28.dp)
+                )
             }
+
             Spacer(Modifier.width(16.dp))
+
             Column(Modifier.weight(1f)) {
-                Text(medicine.medicineName, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-                Text("Dosage: ${medicine.dosage}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(0.6f))
+                Text(
+                    text = medicine.medicineName,
+                    fontWeight = FontWeight.ExtraBold, // More emphasis on name
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = "Dosage: ${medicine.dosage}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                )
             }
-            // The chevron indicates there is more to see!
-            Icon(Icons.Rounded.ChevronRight, "View Details", tint = MaterialTheme.colorScheme.onSurface.copy(0.3f))
+
+            // Refined Chevron
+            Box(
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.03f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.ChevronRight,
+                    contentDescription = "View Details",
+                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         }
     }
 }

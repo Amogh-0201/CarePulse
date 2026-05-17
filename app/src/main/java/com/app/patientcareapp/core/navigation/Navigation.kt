@@ -58,6 +58,7 @@ fun Navigation(
         ) {
             composable(Screen.Home.route) {
                 HomeScreen(
+                    navController = navController,
                     paddingValues = innerPadding,
                     onMedicineClick = { medId ->
                         navController.navigate("add_edit_med_reminder?id=$medId")

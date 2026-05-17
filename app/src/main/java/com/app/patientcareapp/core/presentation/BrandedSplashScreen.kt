@@ -1,6 +1,7 @@
 package com.app.patientcareapp.core.presentation
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -26,32 +28,42 @@ import kotlinx.coroutines.delay
 fun BrandedSplashScreen(
     onAnimationFinished: () -> Unit
 ) {
+    var startGradientFade by remember { mutableStateOf(false) }
     var startLogoAnimation by remember { mutableStateOf(false) }
     var startNameAnimation by remember { mutableStateOf(false) }
     var startTaglineAnimation by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        delay(300) // Initial silence
+        startGradientFade = true // Immediately start blending in your beautiful gradient
+        delay(200)
         startLogoAnimation = true
-        delay(600) // Reveal Name
+        delay(500)
         startNameAnimation = true
-        delay(700) // Reveal Tagline
+        delay(600)
         startTaglineAnimation = true
-        delay(1800) // Stay for a moment
+        delay(1800)
         onAnimationFinished()
     }
 
+    val gradientAlpha by animateFloatAsState(
+        targetValue = if (startGradientFade) 1f else 0f,
+        animationSpec = tween(1000),
+        label = "GradientFade"
+    )
+
     val bgGradient = Brush.verticalGradient(
         colors = listOf(
-            MaterialTheme.colorScheme.primary.copy(alpha = 1f),
-            MaterialTheme.colorScheme.secondary.copy(alpha = 1f),
+            MaterialTheme.colorScheme.primary,
+            MaterialTheme.colorScheme.secondary,
             MaterialTheme.colorScheme.background
         )
     )
 
+
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .alpha(gradientAlpha)
             .background(bgGradient),
         contentAlignment = Alignment.Center
     ) {
@@ -60,7 +72,7 @@ fun BrandedSplashScreen(
             // 1. The Branded App Logo
             AnimatedVisibility(
                 visible = startLogoAnimation,
-                enter = fadeIn(tween(1000)) + scaleIn(tween(1000), initialScale = 0.8f)
+                enter = fadeIn(tween(800)) + scaleIn(tween(800), initialScale = 0.8f)
             ) {
                 // Using your ic_launcher_foreground vector
                 Image(
@@ -75,7 +87,7 @@ fun BrandedSplashScreen(
             // 2. The App Name: CarePulse
             AnimatedVisibility(
                 visible = startNameAnimation,
-                enter = fadeIn(tween(800)) + slideInVertically(tween(800)) { it / 2 }
+                enter = fadeIn(tween(700)) + slideInVertically(tween(700)) { it / 2 }
             ) {
                 Text(
                     text = "CarePulse",
@@ -91,7 +103,7 @@ fun BrandedSplashScreen(
             // 3. The Tagline
             AnimatedVisibility(
                 visible = startTaglineAnimation,
-                enter = fadeIn(tween(1000)) + slideInVertically(tween(1000)) { it / 3 }
+                enter = fadeIn(tween(900)) + slideInVertically(tween(900)) { it / 3 }
             ) {
                 Text(
                     text = "Your Health, Our Responsibility",

@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.PatientCareApp" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.PatientCareApp" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">#F8FAFC</item>
+    </style>
 
     <style name="Theme.PatientCareApp.Splash" parent="Theme.SplashScreen">
         <!-- 1. Use your catchy logo as the system icon -->
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
 
         <!-- 2. Match your app's background color -->
         <item name="windowSplashScreenBackground">#F8FAFC</item>
