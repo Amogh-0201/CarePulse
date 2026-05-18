@@ -1,5 +1,8 @@
 package com.app.patientcareapp
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.patientcareapp.core.data.preferences.PreferenceManager
@@ -18,6 +21,9 @@ class MainViewModel @Inject constructor(
     private val _startDestination = MutableStateFlow<String?>(null)
     val startDestination = _startDestination.asStateFlow()
 
+    var splashFinished by mutableStateOf(false)
+        private set
+
     init {
         viewModelScope.launch {
             preferenceManager.isOnBoardingCompleted.collect { completed ->
@@ -29,4 +35,9 @@ class MainViewModel @Inject constructor(
             }
         }
     }
+
+    fun setSplashScreenFinished() {
+        splashFinished = true
+    }
+
 }

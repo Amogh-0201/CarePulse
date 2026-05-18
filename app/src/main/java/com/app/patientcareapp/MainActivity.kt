@@ -58,11 +58,9 @@ class MainActivity : ComponentActivity() {
 
                 val startDestination by viewModel.startDestination.collectAsState()
 
-                var splashFinished by remember { mutableStateOf(false) }
-
-                if (!splashFinished || startDestination == null) {
+                if (!viewModel.splashFinished || startDestination == null) {
                     BrandedSplashScreen(
-                        onAnimationFinished = { splashFinished = true }
+                        onAnimationFinished = { viewModel.setSplashScreenFinished() }
                     )
                 } else {
                     Navigation(startDestination = startDestination!!)
