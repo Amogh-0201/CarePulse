@@ -8,9 +8,8 @@ import com.app.patientcareapp.feature_med_reminder.data.alarm.MedicineAlarmSched
 import com.app.patientcareapp.feature_med_reminder.domain.model.MedReminder
 import com.app.patientcareapp.feature_med_reminder.domain.use_case.MedReminderUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -43,7 +42,7 @@ class MedReminderViewModel @Inject constructor(
                 }
             }
             is MedReminderScreenEvents.OnDeleteMedReminderClick -> {
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     deletedMedReminder = useCases.getMedReminderUseCase(event.id)
                     deletedMedReminder?.let{
                         alarmManager.cancelMedReminder(it)

@@ -24,6 +24,7 @@ import androidx.navigation.NavController
 import com.app.patientcareapp.feature_med_reminder.domain.model.MedReminder
 import com.app.patientcareapp.ui.theme.PrimaryBlue
 import com.app.patientcareapp.ui.theme.SecondaryTeal
+import kotlinx.coroutines.launch
 
 @Composable
 fun MedReminderScreen(
@@ -32,6 +33,7 @@ fun MedReminderScreen(
 ) {
     val medReminders by viewModel.medReminders.collectAsState(initial = emptyList())
     val snackBarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { event ->
@@ -40,9 +42,15 @@ fun MedReminderScreen(
                     navController.navigate("add_edit_med_reminder")
                 }
                 is MedReminderViewModel.UiEvent.ShowSnackBar -> {
-                    val result = snackBarHostState.showSnackbar(message = event.message, actionLabel = event.action)
-                    if(result == SnackbarResult.ActionPerformed) {
-                        viewModel.onEvent(MedReminderScreenEvents.OnUndoDeleteMedReminderClick)
+                    scope.launch {
+                        val result = snackBarHostState.showSnackbar(
+                            message = event.message,
+                            actionLabel = event.action,
+                            duration = SnackbarDuration.Short
+                        )
+                        if(result == SnackbarResult.ActionPerformed) {
+                            viewModel.onEvent(MedReminderScreenEvents.OnUndoDeleteMedReminderClick)
+                        }
                     }
                 }
                 is MedReminderViewModel.UiEvent.NavigateToEditMedReminder -> {
