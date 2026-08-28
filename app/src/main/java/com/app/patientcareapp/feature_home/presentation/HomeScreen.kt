@@ -31,8 +31,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.app.patientcareapp.core.util.BatteryOptimizationHelper
 import com.app.patientcareapp.core.util.Screen
-import com.app.patientcareapp.ui.theme.PrimaryBlue
-import com.app.patientcareapp.ui.theme.SecondaryTeal
 
 @Composable
 fun HomeScreen(
@@ -176,12 +174,13 @@ private fun HeaderSection(
     ) {
         Column {
             Text(
-                text = "Welcome",
+                text = "Welcome,",
                 style = MaterialTheme.typography.labelLarge,
+                fontSize = 20.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
             )
             Text(
-                text = userName.ifBlank { "Patient" },
+                text = userName.ifBlank { "User" },
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Black
             )
@@ -192,7 +191,7 @@ private fun HeaderSection(
             modifier = Modifier
                 .size(52.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
                 .clickable(onClick = onProfileClick),
             contentAlignment = Alignment.Center
         ) {
@@ -217,7 +216,7 @@ private fun UpcomingMedicineMiniCard(
         modifier = modifier.height(160.dp),
         shape = RoundedCornerShape(28.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.5f))
     ) {
         Box(modifier = Modifier.background(gradient).fillMaxSize().padding(16.dp)) {
             Column(verticalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxSize()) {
@@ -254,7 +253,7 @@ private fun HealthSummaryMiniCard(
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.5f))
     ) {
         Column(
             modifier = Modifier
@@ -324,7 +323,7 @@ private fun MedicineItemCard(
             containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.5f))
     ) {
         Row(
             modifier = Modifier.padding(12.dp), // Tighter padding for a cleaner look
@@ -387,7 +386,7 @@ private fun EmptyMedicinesState() {
         modifier = Modifier.fillMaxWidth().padding(40.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(Icons.Rounded.CheckCircle, null, Modifier.size(64.dp), tint = MaterialTheme.colorScheme.primary.copy(0.1f))
+        Icon(Icons.Rounded.CheckCircle, null, Modifier.size(64.dp), tint = MaterialTheme.colorScheme.primary.copy(0.2f))
         Spacer(Modifier.height(16.dp))
         Text("All medicines taken!", color = MaterialTheme.colorScheme.onSurface.copy(0.4f))
     }
@@ -409,7 +408,7 @@ private fun BatteryWarningCard(onDismiss: () -> Unit) {
                 Text("Delayed Alarms?", fontWeight = FontWeight.Bold)
             }
             Spacer(Modifier.height(8.dp))
-            Text("Phone battery settings might delay your reminders.", style = MaterialTheme.typography.bodySmall)
+            Text("Phone battery settings might delay your reminders. You can safely dismiss this request if you want.", style = MaterialTheme.typography.bodySmall)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 TextButton(onClick = onDismiss) { Text("Dismiss", color = MaterialTheme.colorScheme.error) }
                 Button(

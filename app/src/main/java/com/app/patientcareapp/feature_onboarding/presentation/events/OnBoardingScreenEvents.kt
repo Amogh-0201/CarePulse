@@ -6,7 +6,7 @@ import com.app.patientcareapp.feature_profile.domain.model.Gender
 sealed class OnBoardingScreenEvents {
 
     data class OnNameChange(val name: String): OnBoardingScreenEvents()
-    data class OnAgeChange(val age: String): OnBoardingScreenEvents()
+    data class OnDateOfBirthChange(val dateOfBirth: Long): OnBoardingScreenEvents()
     data class OnGenderChange(val gender: Gender): OnBoardingScreenEvents()
     data class OnBloodGroupChange(val bloodGroup: BloodGroup): OnBoardingScreenEvents()
     data class OnBloodPressureChange(val bloodPressure: String): OnBoardingScreenEvents()

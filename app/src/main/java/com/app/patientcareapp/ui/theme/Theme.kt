@@ -37,7 +37,7 @@ private val LightColorScheme = lightColorScheme(
     onSecondary = Color.White,
     onBackground = TextPrimary,
     onSurface = TextPrimary,
-    outline = Color(0xFFE2E8F0),
+    outline = LightOutline,
     error = ErrorRed
 )
 

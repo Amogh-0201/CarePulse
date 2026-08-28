@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -19,6 +20,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,6 +39,7 @@ fun AddEditMedReminderScreen(
     modifier: Modifier = Modifier
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
+    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(true) {
         viewModel.uiEvent.collect { event ->
@@ -88,7 +92,16 @@ fun AddEditMedReminderScreen(
         },
         modifier = modifier.fillMaxSize()
     ) { innerPadding ->
-        Box(modifier = Modifier.fillMaxSize().background(bgGradient)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(bgGradient)
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = {
+                        focusManager.clearFocus()
+                    })
+                }
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -109,7 +122,7 @@ fun AddEditMedReminderScreen(
                         shape = RoundedCornerShape(16.dp),
                         leadingIcon = { Icon(Icons.Rounded.Label, null, tint = MaterialTheme.colorScheme.primary) },
                         colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f)
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.5f)
                         )
                     )
                     Spacer(modifier = Modifier.height(12.dp))
@@ -121,7 +134,7 @@ fun AddEditMedReminderScreen(
                         shape = RoundedCornerShape(16.dp),
                         leadingIcon = { Icon(Icons.Rounded.Opacity, null, tint = MaterialTheme.colorScheme.primary) },
                         colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f)
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.5f)
                         )
                     )
                 }
@@ -244,7 +257,7 @@ fun AddEditMedReminderScreen(
                     HorizontalDivider(
                         modifier = Modifier.padding(vertical = 12.dp),
                         thickness = 1.dp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f) // Correct way to apply alpha
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
                     )
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -269,7 +282,7 @@ fun AddEditMedReminderScreen(
                     minLines = 3,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f)
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.5f)
                     )
                 )
 
@@ -318,7 +331,7 @@ fun AddEditMedReminderScreen(
                     }) { Text("OK") }
                 },
                 dismissButton = { TextButton(onClick = { showStartDatePicker.value = false }) { Text("Cancel") } }
-            ) { DatePicker(state = datePickerState) }
+            ) { DatePicker(state = datePickerState, showModeToggle = false) }
         }
 
         if (showEndDatePicker.value) {
@@ -332,7 +345,7 @@ fun AddEditMedReminderScreen(
                     }) { Text("OK") }
                 },
                 dismissButton = { TextButton(onClick = { showEndDatePicker.value = false }) { Text("Cancel") } }
-            ) { DatePicker(state = datePickerState) }
+            ) { DatePicker(state = datePickerState, showModeToggle = false) }
         }
     }
 }
@@ -344,7 +357,7 @@ fun PremiumFormCard(title: String, icon: ImageVector, content: @Composable Colum
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.5f))
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {

@@ -2,11 +2,12 @@ package com.app.patientcareapp.feature_onboarding.presentation.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Cancel
@@ -20,10 +21,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.app.patientcareapp.core.presentation.components.OnboardingCard
+import com.app.patientcareapp.core.presentation.components.OnboardingProgress
 import com.app.patientcareapp.feature_onboarding.presentation.events.OnBoardingScreenEvents
 import com.app.patientcareapp.feature_onboarding.presentation.viewmodels.OnBoardingViewModel
 import com.app.patientcareapp.ui.theme.PrimaryBlue
@@ -37,6 +42,7 @@ fun AskConditionsScreen(
         navController.getBackStackEntry("onboarding")
     }
     val viewModel: OnBoardingViewModel = hiltViewModel(parentEntry)
+    val focusManager = LocalFocusManager.current
 
     val bgGradient = Brush.verticalGradient(
         colors = listOf(
@@ -49,7 +55,13 @@ fun AskConditionsScreen(
     )
 
     Scaffold(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                })
+            }
     ) { padding ->
         Box(
             modifier = Modifier
@@ -61,6 +73,7 @@ fun AskConditionsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 24.dp)
+                    .verticalScroll(rememberScrollState())
             ) {
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -82,7 +95,7 @@ fun AskConditionsScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                OnboardingCard(title = "Add Condition", icon = Icons.Rounded.HealthAndSafety) {
+                OnboardingCard(title = "Add Conditions", icon = Icons.Rounded.HealthAndSafety) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
@@ -189,7 +202,7 @@ private fun OnboardingChip(
         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
         border = androidx.compose.foundation.BorderStroke(
             width = 1.dp,
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
         )
     ) {
         Row(

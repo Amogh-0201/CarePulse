@@ -2,11 +2,12 @@ package com.app.patientcareapp.feature_onboarding.presentation.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Cancel
@@ -21,11 +22,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.app.patientcareapp.core.presentation.components.AppSnackbarHost
+import com.app.patientcareapp.core.presentation.components.OnboardingCard
+import com.app.patientcareapp.core.presentation.components.OnboardingProgress
 import com.app.patientcareapp.core.util.Screen
 import com.app.patientcareapp.feature_onboarding.presentation.events.OnBoardingScreenEvents
 import com.app.patientcareapp.feature_onboarding.presentation.viewmodels.OnBoardingViewModel
@@ -39,12 +44,13 @@ fun AskAllergiesScreen(
     }
     val viewModel: OnBoardingViewModel = hiltViewModel(parentEntry)
     val snackBarHostState = remember { SnackbarHostState() }
+    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(true) {
         viewModel.uiEvent.collect { uiEvent ->
             when(uiEvent) {
                 is OnBoardingViewModel.UiEvent.NavigateToMainApp -> {
-                    navController.navigate(Screen.Home.route) {
+                    navController.navigate(Screen.Main.route) {
                         popUpTo("onboarding") {
                             inclusive = true
                         }
@@ -68,7 +74,13 @@ fun AskAllergiesScreen(
     )
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                })
+            },
         snackbarHost = { AppSnackbarHost(hostState = snackBarHostState) }
     ) { padding ->
         Box(
@@ -81,6 +93,7 @@ fun AskAllergiesScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 24.dp)
+                    .verticalScroll(rememberScrollState())
             ) {
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -95,7 +108,7 @@ fun AskAllergiesScreen(
                     fontWeight = FontWeight.Black
                 )
                 Text(
-                    text = "Finally, do you have any drug or food allergies we should be aware of?",
+                    text = "Finally, do you have any drug or food allergies ?",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                 )
@@ -103,7 +116,7 @@ fun AskAllergiesScreen(
                 Spacer(modifier = Modifier.height(32.dp))
 
                 // Using WarningAmber for Allergies
-                OnboardingCard(title = "Add Allergy", icon = Icons.Rounded.WarningAmber) {
+                OnboardingCard(title = "Add Allergies", icon = Icons.Rounded.WarningAmber) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.fillMaxWidth()
@@ -209,7 +222,7 @@ private fun AllergyChip(
         color = Color(0xFFF59E0B).copy(alpha = 0.05f),
         border = androidx.compose.foundation.BorderStroke(
             width = 1.dp,
-            color = Color(0xFFF59E0B).copy(alpha = 0.1f)
+            color = Color(0xFFF59E0B).copy(alpha = 0.5f)
         )
     ) {
         Row(

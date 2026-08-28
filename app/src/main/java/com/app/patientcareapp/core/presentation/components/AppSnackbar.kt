@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.app.patientcareapp.ui.theme.LightOutline
 
 @Composable
 fun AppSnackbar(
@@ -62,7 +63,7 @@ fun AppSnackbar(
             contentColor = contentColor
         ),
 
-        border = BorderStroke(1.dp, if (isDark) Color(0xFF3E4C5F) else Color(0xFFE2E8F0).copy(alpha = 0.5f)),
+        border = BorderStroke(1.dp, if (isDark) Color(0xFF3E4C5F) else LightOutline.copy(alpha = 0.8f)),
 
         elevation = CardDefaults.cardElevation(
             defaultElevation = 8.dp

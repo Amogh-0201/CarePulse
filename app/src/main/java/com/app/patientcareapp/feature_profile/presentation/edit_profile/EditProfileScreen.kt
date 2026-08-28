@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -21,12 +22,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.app.patientcareapp.core.presentation.components.AppSnackbarHost
+import com.app.patientcareapp.core.presentation.components.DatePickerField
+import com.app.patientcareapp.core.presentation.components.SelectionDropdown
+import com.app.patientcareapp.feature_profile.domain.model.BloodGroup
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -35,6 +41,7 @@ fun EditProfileScreen(
     viewModel: EditProfileViewModel = hiltViewModel()
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
+    val focusManager = LocalFocusManager.current
 
     // Premium Mesh Background
     val bgGradient = Brush.verticalGradient(
@@ -82,6 +89,11 @@ fun EditProfileScreen(
                 .fillMaxSize()
                 .background(bgGradient)
                 .padding(paddingValues)
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = {
+                        focusManager.clearFocus()
+                    })
+                }
         ) {
             Column(
                 modifier = Modifier
@@ -99,7 +111,7 @@ fun EditProfileScreen(
                         containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
                     ),
                     elevation = CardDefaults.cardElevation(0.dp),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f))
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.5f))
                 ) {
                     Row(
                         modifier = Modifier.padding(20.dp),
@@ -121,7 +133,7 @@ fun EditProfileScreen(
                                 style = MaterialTheme.typography.titleMedium
                             )
                             Text(
-                                text = "${viewModel.gender?.displayName} • ${viewModel.bloodGroup?.displayName}",
+                                text = viewModel.gender?.displayName ?: "",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                             )
@@ -129,18 +141,26 @@ fun EditProfileScreen(
                     }
                 }
 
-                // Section: Age
+                // Section: Basic Info
                 PremiumEditCard(title = "Basic Information", icon = Icons.Rounded.Badge) {
-                    OutlinedTextField(
-                        value = viewModel.age?.toString() ?: "",
-                        onValueChange = { viewModel.onEvent(EditProfileScreenEvents.OnAgeChange(it)) },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
-                        label = { Text("Your Age") },
-                        singleLine = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f)
-                        )
+                    DatePickerField(
+                        label = "Date of Birth",
+                        selectedDate = viewModel.dateOfBirth,
+                        onDateSelected = {
+                            viewModel.onEvent(EditProfileScreenEvents.OnDateOfBirthChange(it))
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    SelectionDropdown<BloodGroup>(
+                        label = "Blood Group",
+                        options = BloodGroup.entries,
+                        selectedOption = viewModel.bloodGroup,
+                        optionLabel = { it.displayName },
+                        onOptionSelected = {
+                            viewModel.onEvent(EditProfileScreenEvents.OnBloodGroupChange(it))
+                        }
                     )
                 }
 
@@ -179,7 +199,7 @@ fun EditProfileScreen(
                         shape = RoundedCornerShape(16.dp),
                         placeholder = { Text("e.g. 120/80") },
                         colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f)
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.5f)
                         )
                     )
                     Spacer(modifier = Modifier.height(12.dp))
@@ -191,7 +211,7 @@ fun EditProfileScreen(
                         shape = RoundedCornerShape(16.dp),
                         placeholder = { Text("e.g. 95") },
                         colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f)
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.5f)
                         )
                     )
                 }
@@ -226,7 +246,7 @@ private fun PremiumEditCard(
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(0.5.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.5f))
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -266,7 +286,7 @@ private fun EditablePremiumChipSection(
                 placeholder = { Text("Add new...") },
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f)
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.5f)
                 )
             )
             Spacer(modifier = Modifier.width(8.dp))

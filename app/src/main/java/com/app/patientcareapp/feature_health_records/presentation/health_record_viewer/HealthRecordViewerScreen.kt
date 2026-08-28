@@ -108,7 +108,7 @@ fun HealthRecordViewerScreen(
                             .height(260.dp),
                         shape = RoundedCornerShape(32.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f))
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.5f))
                     ) {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             if (record.fileType == FileType.IMAGE) {
@@ -179,7 +179,7 @@ fun HealthRecordViewerScreen(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(28.dp),
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f))
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.5f))
                     ) {
                         Column(modifier = Modifier.padding(24.dp)) {
                             Text(
@@ -206,7 +206,7 @@ fun HealthRecordViewerScreen(
 
                             HorizontalDivider(
                                 modifier = Modifier.padding(vertical = 20.dp),
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
                             )
 
                             // Detail Rows
@@ -238,7 +238,7 @@ fun HealthRecordViewerScreen(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(28.dp),
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary.copy(0.03f)),
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = if (isSystemInDarkTheme()) 0.3f else 0.05f))
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.5f))
                         ) {
                             Column(modifier = Modifier.padding(24.dp)) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {

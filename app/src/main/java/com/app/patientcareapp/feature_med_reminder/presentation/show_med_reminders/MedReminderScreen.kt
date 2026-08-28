@@ -90,22 +90,32 @@ fun MedReminderScreen(
         }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().background(bgGradient).padding(padding)) {
-            if (medReminders.isEmpty()) {
-                EmptyRemindersState()
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 100.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 100.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                item {
+                    Text(
+                        text = "Medications",
+                        modifier = Modifier.padding(start = 12.dp),
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Black
+                    )
+                }
+
+                if (medReminders.isEmpty()) {
                     item {
-                        Text(
-                            text = "Medications",
-                            modifier = Modifier.padding(start = 12.dp),
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Black
-                        )
+                        Box(
+                            modifier = Modifier
+                                .fillParentMaxHeight(0.8f)
+                                .fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            EmptyRemindersState()
+                        }
                     }
+                } else {
                     items(medReminders, key = { it.id ?: it.medicineName }) { reminder ->
                         Box(
                             modifier = Modifier.animateItem(
@@ -142,7 +152,7 @@ fun EnhancedMedReminderItem(
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.5f))
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
@@ -261,7 +271,7 @@ fun EnhancedMedReminderItem(
                     Surface(
                         shape = CircleShape,
                         color = if (isExpired) Color.LightGray.copy(0.2f) else MaterialTheme.colorScheme.primary.copy(0.05f),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(0.1f))
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(0.3f))
                     ) {
                         Text(
                             text = time,
@@ -297,7 +307,10 @@ private fun formatRepeat(type: String) = when(type) {
 
 @Composable
 fun EmptyRemindersState() {
-    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
         Icon(Icons.AutoMirrored.Rounded.PlaylistAdd, null, modifier = Modifier.size(100.dp), tint = MaterialTheme.colorScheme.primary.copy(0.1f))
         Spacer(Modifier.height(16.dp))
         Text("No reminders set", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface.copy(0.4f))

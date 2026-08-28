@@ -26,7 +26,7 @@ class OnBoardingViewModel @Inject constructor(
     var name by mutableStateOf("")
         private set
 
-    var age by mutableStateOf("")
+    var dateOfBirth by mutableStateOf<Long?>(null)
         private set
 
     var gender by mutableStateOf<Gender?>(null)
@@ -68,8 +68,8 @@ class OnBoardingViewModel @Inject constructor(
             is OnBoardingScreenEvents.OnNameChange -> {
                 name = event.name
             }
-            is OnBoardingScreenEvents.OnAgeChange -> {
-                age = event.age
+            is OnBoardingScreenEvents.OnDateOfBirthChange -> {
+                dateOfBirth = event.dateOfBirth
             }
             is OnBoardingScreenEvents.OnGenderChange -> {
                 gender = event.gender
@@ -123,8 +123,7 @@ class OnBoardingViewModel @Inject constructor(
     fun isBasicInfoValid(): Boolean {
         return (
                 name.isNotBlank() &&
-                age.isNotBlank() &&
-                age.toIntOrNull() in 1..120 &&
+                dateOfBirth != null &&
                 gender != null &&
                 bloodGroup != null
                 )
@@ -148,7 +147,7 @@ class OnBoardingViewModel @Inject constructor(
         useCases.saveProfileUseCase(
             Profile(
                 name = name,
-                age = age.toInt(),
+                dateOfBirth = dateOfBirth!!,
                 gender = gender!!,
                 bloodGroup = bloodGroup!!,
                 conditions = conditions,

@@ -103,7 +103,7 @@ fun ProfileScreen(
                             icon = Icons.Rounded.Bloodtype,
                             iconColor = Color(0xFFEF4444)
                         )
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f))
                         VitalDisplayItem(
                             label = "Sugar Level",
                             value = viewModel.sugar,
@@ -177,7 +177,7 @@ fun PremiumProfileCard(title: String, icon: ImageVector, content: @Composable Co
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(0.5.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.5f))
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -210,14 +210,18 @@ fun VitalDisplayItem(label: String, value: String, unit: String, icon: ImageVect
 
 @Composable
 fun ProfileChip(text: String, color: Color = MaterialTheme.colorScheme.primary) {
-    Surface(shape = CircleShape, color = color.copy(0.05f), border = androidx.compose.foundation.BorderStroke(1.dp, color.copy(0.1f))) {
+    Surface(shape = CircleShape, color = color.copy(0.05f), border = androidx.compose.foundation.BorderStroke(1.dp, color.copy(0.3f))) {
         Text(text, modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp), style = MaterialTheme.typography.labelLarge, color = color, fontWeight = FontWeight.Bold)
     }
 }
 
 @Composable
 fun InfoTag(text: String, color: Color = MaterialTheme.colorScheme.primary) {
-    Surface(color = color.copy(0.1f), shape = RoundedCornerShape(8.dp)) {
+    Surface(
+        color = color.copy(0.1f),
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(1.dp, color.copy(0.2f))
+    ) {
         Text(text, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), style = MaterialTheme.typography.labelMedium, color = color, fontWeight = FontWeight.Bold)
     }
 }

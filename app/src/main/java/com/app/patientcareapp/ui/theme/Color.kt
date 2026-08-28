@@ -44,6 +44,7 @@ val DarkTextSecondary = Color(0xFF94A3B8)
 val DarkTextMuted = Color(0xFF64748B)
 
 // Borders / dividers
+val LightOutline = Color(0xFFCBD5E1)
 val DarkOutline = Color(0xFF334155)
 
 

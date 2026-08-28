@@ -6,6 +6,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -22,6 +23,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -42,6 +45,7 @@ fun HealthRecordsScreen(
     viewModel: HealthRecordsViewModel = hiltViewModel()
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
+    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(true) {
         viewModel.uiEvent.collectLatest { event ->
@@ -83,7 +87,17 @@ fun HealthRecordsScreen(
         },
         snackbarHost = { AppSnackbarHost(hostState = snackBarHostState) }
     ) { innerPadding ->
-        Box(modifier = Modifier.fillMaxSize().background(bgGradient).padding(innerPadding)) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(bgGradient)
+                .padding(innerPadding)
+                .pointerInput(Unit) {
+                    detectTapGestures(onTap = {
+                        focusManager.clearFocus()
+                    })
+                }
+        ) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
@@ -109,7 +123,7 @@ fun HealthRecordsScreen(
                         colors = OutlinedTextFieldDefaults.colors(
                             unfocusedContainerColor = MaterialTheme.colorScheme.surface.copy(0.7f),
                             focusedContainerColor = MaterialTheme.colorScheme.surface,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f),
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.5f),
                             focusedBorderColor = MaterialTheme.colorScheme.primary.copy(0.5f)
                         ),
                         singleLine = true
@@ -147,7 +161,16 @@ fun HealthRecordsScreen(
                         }
                     }
                 } else if (viewModel.healthRecords.isEmpty()) {
-                    item { EmptyRecordsState() }
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillParentMaxHeight(0.6f)
+                                .fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            EmptyRecordsState()
+                        }
+                    }
                 } else {
                     items(items = viewModel.healthRecords, key = { it.id }) { record ->
                         Box(
@@ -184,7 +207,7 @@ fun CategoryChip(
         modifier = Modifier.clickable { onClick() },
         shape = CircleShape,
         color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
-        border = if (isSelected) null else androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(0.1f)),
+        border = if (isSelected) null else androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
         shadowElevation = if (isSelected) 4.dp else 0.dp
     ) {
         Text(
@@ -217,7 +240,7 @@ fun HealthRecordCard(
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.5f))
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -301,7 +324,6 @@ fun HealthRecordCard(
 @Composable
 fun EmptyRecordsState() {
     Column(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 60.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {

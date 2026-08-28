@@ -31,7 +31,7 @@ class EditProfileViewModel @Inject constructor(
             profiles.collectLatest { profile ->
                 profile?.let {
                     name = it.name
-                    age = it.age
+                    dateOfBirth = it.dateOfBirth
                     gender = it.gender
                     bloodGroup = it.bloodGroup
                     conditions = it.conditions
@@ -46,7 +46,7 @@ class EditProfileViewModel @Inject constructor(
     var name by mutableStateOf("")
         private set
 
-    var age by mutableStateOf<Int?>(null)
+    var dateOfBirth by mutableStateOf<Long?>(null)
         private set
 
     var gender by mutableStateOf<Gender?>(null)
@@ -83,8 +83,11 @@ class EditProfileViewModel @Inject constructor(
 
     fun onEvent(event: EditProfileScreenEvents) {
         when(event) {
-            is EditProfileScreenEvents.OnAgeChange -> {
-                age = event.age.toIntOrNull()  //only allow the keyboard with numbers
+            is EditProfileScreenEvents.OnDateOfBirthChange -> {
+                dateOfBirth = event.dateOfBirth
+            }
+            is EditProfileScreenEvents.OnBloodGroupChange -> {
+                bloodGroup = event.bloodGroup
             }
             is EditProfileScreenEvents.OnConditionInputChange -> {
                 conditionInput = event.condition
@@ -128,7 +131,7 @@ class EditProfileViewModel @Inject constructor(
     fun isBasicInfoValid(): Boolean {  //don't allow to save the changes if not
         return (
                 name.isNotBlank() &&
-                age in 1..120 &&
+                dateOfBirth != null &&
                 gender != null &&
                 bloodGroup != null)
     }
@@ -147,7 +150,7 @@ class EditProfileViewModel @Inject constructor(
         useCases.saveProfileUseCase(
             Profile(
                 name = name,
-                age = age!!,
+                dateOfBirth = dateOfBirth!!,
                 gender = gender!!,
                 bloodGroup = bloodGroup!!,
                 conditions = conditions,

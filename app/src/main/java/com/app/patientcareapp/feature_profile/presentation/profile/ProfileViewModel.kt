@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.app.patientcareapp.core.util.DateUtils
 import com.app.patientcareapp.feature_profile.domain.model.BloodGroup
 import com.app.patientcareapp.feature_profile.domain.model.Gender
 import com.app.patientcareapp.feature_profile.domain.use_case.ProfileUseCases
@@ -27,7 +28,7 @@ class ProfileViewModel @Inject constructor(
             profiles.collectLatest { profile ->
                 profile?.let {
                     name = it.name
-                    age = it.age
+                    age = DateUtils.calculateAge(it.dateOfBirth)
                     gender = it.gender
                     bloodGroup = it.bloodGroup
 

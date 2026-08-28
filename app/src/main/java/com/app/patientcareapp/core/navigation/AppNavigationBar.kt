@@ -50,7 +50,7 @@ fun AppNavBar(
         shape = RoundedCornerShape(28.dp),
         color = MaterialTheme.colorScheme.surface,
         tonalElevation = 3.dp,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
     ) {
         NavigationBar(
             // We use a slightly taller height to accommodate system font scaling without clipping

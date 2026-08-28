@@ -1,6 +1,7 @@
 package com.app.patientcareapp.feature_onboarding.presentation.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -19,10 +20,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.app.patientcareapp.core.presentation.components.OnboardingCard
+import com.app.patientcareapp.core.presentation.components.OnboardingProgress
 import com.app.patientcareapp.feature_onboarding.presentation.events.OnBoardingScreenEvents
 import com.app.patientcareapp.feature_onboarding.presentation.viewmodels.OnBoardingViewModel
 import com.app.patientcareapp.ui.theme.PrimaryBlue
@@ -36,6 +41,7 @@ fun AskVitalsScreen(
         navController.getBackStackEntry("onboarding")
     }
     val viewModel: OnBoardingViewModel = hiltViewModel(parentEntry)
+    val focusManager = LocalFocusManager.current
 
     val bgGradient = Brush.verticalGradient(
         colors = listOf(
@@ -48,7 +54,13 @@ fun AskVitalsScreen(
     )
 
     Scaffold(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                })
+            }
     ) { padding ->
         Box(
             modifier = Modifier
@@ -75,7 +87,7 @@ fun AskVitalsScreen(
                     fontWeight = FontWeight.Black
                 )
                 Text(
-                    text = "Enter your most recent readings. This helps us personalize your health summary.",
+                    text = "Enter your most recent readings.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                 )

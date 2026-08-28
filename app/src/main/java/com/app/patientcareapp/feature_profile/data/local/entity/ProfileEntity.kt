@@ -13,7 +13,7 @@ data class ProfileEntity(
     @PrimaryKey
     val id: Int = 0,
     val name: String,
-    val age: Int,
+    val dateOfBirth: Long,
     val gender: Gender,
     val bloodGroup: BloodGroup,
     val conditions: List<String> = emptyList(),
@@ -25,7 +25,7 @@ data class ProfileEntity(
     fun toProfile(): Profile {
         return Profile(
             name = name,
-            age =age,
+            dateOfBirth = dateOfBirth,
             gender = gender,
             bloodGroup = bloodGroup,
             conditions = conditions,

@@ -4,7 +4,7 @@ import com.app.patientcareapp.feature_profile.data.local.entity.ProfileEntity
 
 data class Profile(
     val name: String,
-    val age: Int,
+    val dateOfBirth: Long,
     val gender: Gender,
     val bloodGroup: BloodGroup,
     val conditions: List<String> = emptyList(),
@@ -16,7 +16,7 @@ data class Profile(
     fun toProfileEntity(): ProfileEntity {
         return ProfileEntity(
             name = name,
-            age = age,
+            dateOfBirth = dateOfBirth,
             gender = gender,
             bloodGroup = bloodGroup,
             conditions = conditions,
