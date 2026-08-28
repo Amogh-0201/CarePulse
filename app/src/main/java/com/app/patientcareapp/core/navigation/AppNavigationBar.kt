@@ -29,13 +29,19 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.app.patientcareapp.core.util.Screen
 
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+
 @Composable
 fun AppNavBar(
-    navController: NavHostController
+    navController: NavHostController,
+    pagerState: PagerState
 ) {
-    val screens = listOf(Screen.Home, Screen.MedReminder, Screen.HealthRecords, Screen.Profile)
+    val screens = listOf(Screen.HealthRecords, Screen.Home, Screen.MedReminder)
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+    val scope = rememberCoroutineScope()
 
     Surface(
         modifier = Modifier
@@ -53,17 +59,30 @@ fun AppNavBar(
             tonalElevation = 0.dp,
             windowInsets = WindowInsets(0, 0, 0, 0)
         ) {
-            screens.forEach { screen ->
-                val isSelected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
+            screens.forEachIndexed { index, screen ->
+                val isSelected = if (currentDestination?.route == Screen.Main.route) {
+                    pagerState.currentPage == index
+                } else {
+                    currentDestination?.hierarchy?.any { it.route == screen.route } == true
+                }
 
                 NavigationBarItem(
                     selected = isSelected,
                     alwaysShowLabel = true, // Force label visibility for consistency
                     onClick = {
-                        navController.navigate(screen.route) {
-                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
+                        if (currentDestination?.route == Screen.Main.route) {
+                            scope.launch {
+                                pagerState.animateScrollToPage(index)
+                            }
+                        } else {
+                            navController.navigate(Screen.Main.route) {
+                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                            scope.launch {
+                                pagerState.scrollToPage(index)
+                            }
                         }
                     },
                     icon = {

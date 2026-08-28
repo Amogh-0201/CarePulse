@@ -44,13 +44,6 @@ fun AddEditMedReminderScreen(
                 }
                 is AddEditMedReminderViewModel.UiEvent.SaveSuccess -> {
                     navController.popBackStack()
-                    navController.navigate(Screen.MedReminder.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
                 }
             }
         }

@@ -16,4 +16,5 @@ sealed class Screen(
     object Home: Screen("home", "Home", Icons.Default.Home)
     object MedReminder: Screen("med_reminder","Med Reminder", Icons.Default.Medication)
     object HealthRecords: Screen("health_records", "Health Records", Icons.Default.Description)
+    object Main: Screen("main", "Main", Icons.Default.Home)
 }

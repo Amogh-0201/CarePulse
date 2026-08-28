@@ -12,9 +12,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.app.patientcareapp.core.util.Screen
+import androidx.compose.foundation.pager.rememberPagerState
 import com.app.patientcareapp.feature_health_records.presentation.add_health_records.AddHealthRecordsScreen
 import com.app.patientcareapp.feature_health_records.presentation.health_record_viewer.HealthRecordViewerScreen
-import com.app.patientcareapp.feature_health_records.presentation.health_records.HealthRecordsScreen
 import com.app.patientcareapp.feature_home.presentation.HomeScreen
 import com.app.patientcareapp.feature_med_reminder.presentation.add_edit_med_reminders.AddEditMedReminderScreen
 import com.app.patientcareapp.feature_med_reminder.presentation.show_med_reminders.MedReminderScreen
@@ -31,12 +31,10 @@ fun Navigation(
     startDestination: String
 ) {
     val navController = rememberNavController()
+    val pagerState = rememberPagerState(initialPage = 1) { 3 }
 
     val bottomBarScreens = listOf(
-        Screen.Home.route,
-        Screen.MedReminder.route,
-        Screen.HealthRecords.route,
-        Screen.Profile.route
+        Screen.Main.route
     )
 
     val currentRoute = navController.currentBackStackEntryFlow.collectAsState(initial = null)
@@ -47,29 +45,24 @@ fun Navigation(
     Scaffold(
         bottomBar = {
             if(currentRoute in bottomBarScreens) {
-                AppNavBar(navController = navController)
+                AppNavBar(navController = navController, pagerState = pagerState)
             }
         }
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = startDestination,
+            startDestination = if (startDestination == Screen.Home.route) Screen.Main.route else startDestination,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.Home.route) {
-                HomeScreen(
+            composable(Screen.Main.route) {
+                MainPagerScreen(
                     navController = navController,
                     paddingValues = innerPadding,
+                    pagerState = pagerState,
                     onMedicineClick = { medId ->
                         navController.navigate("add_edit_med_reminder?id=$medId")
                     }
                 )
-            }
-            composable(Screen.MedReminder.route) {
-                MedReminderScreen(navController = navController)
-            }
-            composable(Screen.HealthRecords.route) {
-                HealthRecordsScreen(navController = navController)
             }
             composable(Screen.Profile.route) {
                 ProfileScreen(navController = navController)

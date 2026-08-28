@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.*
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -25,6 +26,8 @@ import com.app.patientcareapp.feature_med_reminder.domain.model.MedReminder
 import com.app.patientcareapp.ui.theme.PrimaryBlue
 import com.app.patientcareapp.ui.theme.SecondaryTeal
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Composable
 fun MedReminderScreen(
@@ -198,6 +201,30 @@ fun EnhancedMedReminderItem(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Date Range
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Rounded.DateRange, null, modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                Spacer(Modifier.width(8.dp))
+                val dateText = remember(reminder.startDate, reminder.endDate) {
+                    val sdf = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+                    val start = sdf.format(Date(reminder.startDate))
+                    val end = reminder.endDate?.let { sdf.format(Date(it)) }
+                    if (end != null) "$start - $end" else "$start (Ongoing)"
+                }
+                Text(dateText, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+            }
+
+            if (!reminder.notes.isNullOrBlank()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(verticalAlignment = Alignment.Top) {
+                    Icon(Icons.AutoMirrored.Rounded.Notes, null, modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                    Spacer(Modifier.width(8.dp))
+                    Text(reminder.notes, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 reminder.times.forEach { time ->
                     Surface(
@@ -240,7 +267,7 @@ private fun formatRepeat(type: String) = when(type) {
 @Composable
 fun EmptyRemindersState() {
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-        Icon(Icons.Rounded.PlaylistAdd, null, modifier = Modifier.size(100.dp), tint = MaterialTheme.colorScheme.primary.copy(0.1f))
+        Icon(Icons.AutoMirrored.Rounded.PlaylistAdd, null, modifier = Modifier.size(100.dp), tint = MaterialTheme.colorScheme.primary.copy(0.1f))
         Spacer(Modifier.height(16.dp))
         Text("No reminders set", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface.copy(0.4f))
     }

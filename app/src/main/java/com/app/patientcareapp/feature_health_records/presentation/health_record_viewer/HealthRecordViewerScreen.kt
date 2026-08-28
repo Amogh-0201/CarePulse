@@ -1,5 +1,7 @@
 package com.app.patientcareapp.feature_health_records.presentation.health_record_viewer
 
+import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
@@ -15,12 +17,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -44,6 +49,8 @@ fun HealthRecordViewerScreen(
 ) {
     val context = LocalContext.current
     val record = viewModel.healthRecord
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(recordId) {
         viewModel.loadRecord(recordId)
@@ -66,10 +73,17 @@ fun HealthRecordViewerScreen(
                         Icon(Icons.Rounded.ArrowBack, "Back")
                     }
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    scrolledContainerColor = Color.Unspecified,
+                    navigationIconContentColor = Color.Unspecified,
+                    titleContentColor = Color.Unspecified,
+                    actionIconContentColor = Color.Unspecified
+                )
             )
         },
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().background(bgGradient).padding(padding)) {
             if (record == null) {
@@ -100,7 +114,8 @@ fun HealthRecordViewerScreen(
                                     model = Uri.parse(record.fileUri),
                                     contentDescription = null,
                                     modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Crop
+                                    contentScale = ContentScale.Crop,
+                                    error = rememberVectorPainter(Icons.Rounded.BrokenImage)
                                 )
                                 // Overlaid "View Full" button for images
                                 Surface(
@@ -108,11 +123,13 @@ fun HealthRecordViewerScreen(
                                         .align(Alignment.BottomEnd)
                                         .padding(16.dp)
                                         .clickable {
-                                            val intent = Intent(Intent.ACTION_VIEW).apply {
-                                                setDataAndType(Uri.parse(record.fileUri), "image/*")
-                                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                            }
-                                            context.startActivity(intent)
+                                            openDocument(
+                                                context = context,
+                                                uriString = record.fileUri,
+                                                mimeType = "image/*",
+                                                scope = scope,
+                                                snackbarHostState = snackbarHostState
+                                            )
                                         },
                                     color = Color.Black.copy(0.6f),
                                     shape = CircleShape
@@ -138,11 +155,13 @@ fun HealthRecordViewerScreen(
                                     Spacer(Modifier.height(20.dp))
                                     Button(
                                         onClick = {
-                                            val intent = Intent(Intent.ACTION_VIEW).apply {
-                                                setDataAndType(Uri.parse(record.fileUri), "application/pdf")
-                                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                            }
-                                            context.startActivity(intent)
+                                            openDocument(
+                                                context = context,
+                                                uriString = record.fileUri,
+                                                mimeType = "application/pdf",
+                                                scope = scope,
+                                                snackbarHostState = snackbarHostState
+                                            )
                                         },
                                         shape = RoundedCornerShape(16.dp)
                                     ) {
@@ -245,6 +264,62 @@ fun HealthRecordViewerScreen(
                     Spacer(Modifier.height(32.dp))
                 }
             }
+        }
+    }
+}
+
+private fun openDocument(
+    context: Context,
+    uriString: String,
+    mimeType: String,
+    scope: kotlinx.coroutines.CoroutineScope,
+    snackbarHostState: SnackbarHostState
+) {
+    val uri = Uri.parse(uriString)
+    
+    // Check if URI is accessible
+    val isAccessible = try {
+        context.contentResolver.openInputStream(uri)?.use { true } ?: false
+    } catch (_: Exception) {
+        false
+    }
+
+    if (!isAccessible) {
+        scope.launch {
+            snackbarHostState.showSnackbar(
+                message = "The file has been moved or deleted from this device.",
+                duration = SnackbarDuration.Short
+            )
+        }
+        return
+    }
+
+    try {
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, mimeType)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        context.startActivity(intent)
+    } catch (_: SecurityException) {
+        scope.launch {
+            snackbarHostState.showSnackbar(
+                message = "Access denied. The file may no longer be available.",
+                duration = SnackbarDuration.Short
+            )
+        }
+    } catch (_: ActivityNotFoundException) {
+        scope.launch {
+            snackbarHostState.showSnackbar(
+                message = "No application found to open this file type.",
+                duration = SnackbarDuration.Short
+            )
+        }
+    } catch (_: Exception) {
+        scope.launch {
+            snackbarHostState.showSnackbar(
+                message = "Could not open the file.",
+                duration = SnackbarDuration.Short
+            )
         }
     }
 }

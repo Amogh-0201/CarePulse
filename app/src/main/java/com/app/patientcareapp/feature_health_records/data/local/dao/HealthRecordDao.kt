@@ -43,7 +43,9 @@ interface HealthRecordDao {
 
     @Query("""
     SELECT * FROM healthrecordentity
-    WHERE title LIKE '%' || :query || '%'
+    WHERE LOWER(title) LIKE '%' || LOWER(:query) || '%'
+       OR LOWER(hospitalName) LIKE '%' || LOWER(:query) || '%'
+       OR LOWER(doctorName) LIKE '%' || LOWER(:query) || '%'
     ORDER BY date DESC
 """)
     fun searchHealthRecords(query: String): Flow<List<HealthRecordEntity>>

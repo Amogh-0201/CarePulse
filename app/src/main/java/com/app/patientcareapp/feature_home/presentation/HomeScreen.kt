@@ -310,7 +310,7 @@ private fun MedicineItemCard(
                 modifier = Modifier
                     .size(32.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.03f)),
+                    .background(Color.Transparent),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

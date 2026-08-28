@@ -98,7 +98,7 @@ fun HealthRecordsScreen(
                     OutlinedTextField(
                         value = viewModel.searchQuery,
                         onValueChange = { viewModel.onEvent(HealthRecordsScreenEvents.OnSearchQueryChange(it)) },
-                        placeholder = { Text("Search records, hospitals...") },
+                        placeholder = { Text("Search records, hospitals, doctors...") },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
                         leadingIcon = { Icon(Icons.Rounded.Search, null, tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)) },
@@ -232,18 +232,31 @@ fun HealthRecordCard(
                     overflow = TextOverflow.Ellipsis
                 )
 
+                Spacer(modifier = Modifier.height(4.dp))
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Rounded.CalendarToday, null, modifier = Modifier.size(12.dp), tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                     Spacer(Modifier.width(4.dp))
                     Text(formattedDate, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                }
 
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     if (!record.hospitalName.isNullOrBlank()) {
-                        Spacer(Modifier.width(8.dp))
                         Icon(Icons.Rounded.Business, null, modifier = Modifier.size(12.dp), tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                         Spacer(Modifier.width(4.dp))
                         Text(record.hospitalName, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
+
+                    if (!record.doctorName.isNullOrBlank()) {
+                        Spacer(Modifier.width(8.dp))
+                        Icon(Icons.Rounded.Person, null, modifier = Modifier.size(12.dp), tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                        Spacer(Modifier.width(4.dp))
+                        Text(record.doctorName, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    }
                 }
+
             }
 
             IconButton(
