@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -180,9 +181,32 @@ fun EnhancedMedReminderItem(
                         text = reminder.medicineName,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = if (isExpired) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSurface
+                        color = if (isExpired) {
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        }
                     )
-                    Text(reminder.dosage, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(0.6f))
+
+                    Spacer(Modifier.height(5.dp))
+
+                    Surface(
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.07f)
+                    ) {
+                        Text(
+                            text = reminder.dosage,
+                            modifier = Modifier.padding(
+                                horizontal = 8.dp,
+                                vertical = 4.dp
+                            ),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary.copy(
+                                alpha = if (isExpired) 0.45f else 0.85f
+                            ),
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
                 }
 
                 IconButton(
@@ -211,18 +235,28 @@ fun EnhancedMedReminderItem(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Dynamic Status Badges
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                StatusBadge(icon = Icons.Rounded.Event, text = formatRepeat(reminder.repeatType))
+            // --------------------------------------------------
+            // Status
+            // --------------------------------------------------
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                StatusBadge(
+                    icon = Icons.Rounded.EventRepeat,
+                    text = formatRepeat(reminder.repeatType)
+                )
 
                 when {
                     isExpired -> {
                         StatusBadge(
                             icon = Icons.Rounded.History,
-                            text = "Inactive (Ended)",
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            text = "Ended",
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                         )
                     }
+
                     !reminder.isActive -> {
                         StatusBadge(
                             icon = Icons.Rounded.PauseCircle,
@@ -230,60 +264,244 @@ fun EnhancedMedReminderItem(
                             color = MaterialTheme.colorScheme.error
                         )
                     }
+
                     else -> {
                         StatusBadge(
                             icon = Icons.Rounded.CheckCircle,
                             text = "Active",
-                            color = Color(0xFF10B981) // Success Green
+                            color = MaterialTheme.colorScheme.tertiary
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
-            // Date Range
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Rounded.DateRange, null, modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-                Spacer(Modifier.width(8.dp))
-                val dateText = remember(reminder.startDate, reminder.endDate) {
-                    val sdf = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
-                    val start = sdf.format(Date(reminder.startDate))
-                    val end = reminder.endDate?.let { sdf.format(Date(it)) }
-                    if (end != null) "$start - $end" else "$start (Ongoing)"
-                }
-                Text(dateText, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+            // --------------------------------------------------
+            // Treatment Period
+            // --------------------------------------------------
+
+            ReminderSectionLabel(
+                icon = Icons.Rounded.DateRange,
+                text = "Treatment period"
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            val dateText = remember(reminder.startDate, reminder.endDate) {
+                val sdf = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+
+                val start = sdf.format(Date(reminder.startDate))
+                val end = reminder.endDate?.let { sdf.format(Date(it)) }
+
+                start to end
             }
 
-            if (!reminder.notes.isNullOrBlank()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(verticalAlignment = Alignment.Top) {
-                    Icon(Icons.AutoMirrored.Rounded.Notes, null, modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-                    Spacer(Modifier.width(8.dp))
-                    Text(reminder.notes, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
-                }
-            }
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(14.dp),
+                color = MaterialTheme.colorScheme.primary.copy(
+                    alpha = if (isExpired) 0.04f else 0.07f
+                ),
+                border = BorderStroke(
+                    1.dp,
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                )
+            ) {
+                Row(
+                    modifier = Modifier.padding(
+                        horizontal = 14.dp,
+                        vertical = 11.dp
+                    ),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Event,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = MaterialTheme.colorScheme.primary.copy(
+                            alpha = if (isExpired) 0.45f else 0.9f
+                        )
+                    )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(Modifier.width(10.dp))
 
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                reminder.times.forEach { time ->
-                    Surface(
-                        shape = CircleShape,
-                        color = if (isExpired) Color.LightGray.copy(0.2f) else MaterialTheme.colorScheme.primary.copy(0.05f),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(0.3f))
-                    ) {
+                    Text(
+                        text = dateText.first,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface.copy(
+                            alpha = if (isExpired) 0.5f else 0.8f
+                        )
+                    )
+
+                    if (dateText.second != null) {
                         Text(
-                            text = time,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = if (isExpired) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f) else MaterialTheme.colorScheme.primary,
+                            text = "  →  ",
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.35f),
                             fontWeight = FontWeight.Bold
                         )
+
+                        Text(
+                            text = dateText.second!!,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface.copy(
+                                alpha = if (isExpired) 0.5f else 0.8f
+                            )
+                        )
+                    } else {
+                        Spacer(Modifier.width(6.dp))
+
+                        Text(
+                            text = "Ongoing",
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(18.dp))
+
+            // --------------------------------------------------
+            // Reminder Times
+            // --------------------------------------------------
+
+            ReminderSectionLabel(
+                icon = Icons.Rounded.Alarm,
+                text = "Reminder times"
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                reminder.times.forEach { time ->
+
+                    Surface(
+                        shape = CircleShape,
+                        color = if (isExpired) {
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
+                        } else {
+                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.10f)
+                        },
+                        border = BorderStroke(
+                            1.dp,
+                            if (isExpired) {
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
+                            } else {
+                                MaterialTheme.colorScheme.secondary.copy(alpha = 0.28f)
+                            }
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(
+                                horizontal = 12.dp,
+                                vertical = 6.dp
+                            ),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(5.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.AccessTime,
+                                contentDescription = null,
+                                modifier = Modifier.size(14.dp),
+                                tint = if (isExpired) {
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f)
+                                } else {
+                                    MaterialTheme.colorScheme.secondary
+                                }
+                            )
+
+                            Text(
+                                text = time,
+                                style = MaterialTheme.typography.labelLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isExpired) {
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                                } else {
+                                    MaterialTheme.colorScheme.secondary
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
+            // --------------------------------------------------
+            // Notes
+            // --------------------------------------------------
+
+            if (!reminder.notes.isNullOrBlank()) {
+                Spacer(modifier = Modifier.height(18.dp))
+
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(14.dp),
+                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.06f)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.Notes,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp),
+                            tint = MaterialTheme.colorScheme.secondary
+                        )
+
+                        Spacer(Modifier.width(10.dp))
+
+                        Column {
+                            Text(
+                                text = "Notes / Instructions",
+                                style = MaterialTheme.typography.labelMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+
+                            Spacer(Modifier.height(2.dp))
+
+                            Text(
+                                text = reminder.notes,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                            )
+                        }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ReminderSectionLabel(
+    icon: ImageVector,
+    text: String
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(7.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+        )
+
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
+        )
     }
 }
 
