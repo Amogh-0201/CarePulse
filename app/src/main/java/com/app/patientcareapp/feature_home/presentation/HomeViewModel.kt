@@ -12,8 +12,11 @@ import com.app.patientcareapp.feature_med_reminder.domain.model.MedReminder
 import com.app.patientcareapp.feature_med_reminder.domain.use_case.MedReminderUseCases
 import com.app.patientcareapp.feature_profile.domain.use_case.ProfileUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -73,7 +76,19 @@ class HomeViewModel @Inject constructor(
 
     private fun loadMedicines() {
         viewModelScope.launch {
-            medReminderUseCases.getAllMedRemindersUseCase().collectLatest { medReminders ->
+            val ticker = flow {
+                while (true) {
+                    emit(Unit)
+                    delay(30_000) // Refresh every 30 seconds to catch time-based updates
+                }
+            }
+
+            combine(
+                medReminderUseCases.getAllMedRemindersUseCase(),
+                ticker
+            ) { medReminders, _ ->
+                medReminders
+            }.collectLatest { medReminders ->
                 todayMedicines = medReminders.filter {
                     isReminderForToday(it)
                 }

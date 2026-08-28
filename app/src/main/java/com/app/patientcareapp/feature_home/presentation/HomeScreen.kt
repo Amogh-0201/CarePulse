@@ -37,7 +37,8 @@ fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel = hiltViewModel(),
     paddingValues: PaddingValues,
-    onMedicineClick: (Int) -> Unit
+    onMedicineClick: (Int) -> Unit,
+    onRecordsCountClick: () -> Unit
 ) {
     val context = LocalContext.current
     val isPreferenceDismissed by viewModel.isBatteryWarningDismissed.collectAsState()
@@ -82,7 +83,8 @@ fun HomeScreen(
                             launchSingleTop = true
                             restoreState = true
                         }
-                    }
+                    },
+                    onRecordsCountClick = onRecordsCountClick
                 )
             }
         }
@@ -96,7 +98,8 @@ private fun HomeScreenContent(
     isSystemOptimizingBattery: Boolean,
     isPreferenceDismissed: Boolean,
     onMedicineClick: (Int) -> Unit,
-    onProfileClick: () -> Unit
+    onProfileClick: () -> Unit,
+    onRecordsCountClick: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -123,7 +126,8 @@ private fun HomeScreenContent(
                 HealthSummaryMiniCard(
                     modifier = Modifier.weight(1f),
                     bloodGroup = viewModel.bloodGroup,
-                    recordCount = viewModel.totalHealthRecords
+                    recordCount = viewModel.totalHealthRecords,
+                    onRecordsCountClick = onRecordsCountClick
                 )
 
                 UpcomingMedicineMiniCard(
@@ -236,20 +240,68 @@ private fun UpcomingMedicineMiniCard(
 }
 
 @Composable
-private fun HealthSummaryMiniCard(modifier: Modifier, bloodGroup: String, recordCount: Int) {
+private fun HealthSummaryMiniCard(
+    modifier: Modifier,
+    bloodGroup: String,
+    recordCount: Int,
+    onRecordsCountClick: () -> Unit
+) {
     Card(
         modifier = modifier.height(160.dp),
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp).fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
-            Icon(Icons.Rounded.Bloodtype, null, tint = Color(0xFFEF4444), modifier = Modifier.size(28.dp))
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Bloodtype,
+                contentDescription = null,
+                tint = Color(0xFFEF4444),
+                modifier = Modifier.size(28.dp)
+            )
+
             Column {
-                Text(bloodGroup.ifBlank { "--" }, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                Text("Blood Group", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                Text(
+                    text = bloodGroup.ifBlank { "--" },
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.ExtraBold
+                )
+                Text(
+                    text = "Blood Group",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                )
             }
-            Text("$recordCount Records", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+
+            // Clickable Records Badge
+            Surface(
+                onClick = onRecordsCountClick,
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                contentColor = MaterialTheme.colorScheme.primary
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = "$recordCount Records",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Icon(
+                        imageVector = Icons.Rounded.ChevronRight,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
         }
     }
 }
