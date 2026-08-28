@@ -3,6 +3,7 @@ package com.app.patientcareapp.feature_med_reminder.presentation.add_edit_med_re
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -106,7 +107,10 @@ fun AddEditMedReminderScreen(
                         label = { Text("Medicine Name*") },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
-                        leadingIcon = { Icon(Icons.Rounded.Label, null, tint = MaterialTheme.colorScheme.primary) }
+                        leadingIcon = { Icon(Icons.Rounded.Label, null, tint = MaterialTheme.colorScheme.primary) },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f)
+                        )
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
@@ -115,7 +119,10 @@ fun AddEditMedReminderScreen(
                         label = { Text("Dosage (e.g., 1 tablet)*") },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
-                        leadingIcon = { Icon(Icons.Rounded.Opacity, null, tint = MaterialTheme.colorScheme.primary) }
+                        leadingIcon = { Icon(Icons.Rounded.Opacity, null, tint = MaterialTheme.colorScheme.primary) },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f)
+                        )
                     )
                 }
 
@@ -262,7 +269,7 @@ fun AddEditMedReminderScreen(
                     minLines = 3,
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f)
                     )
                 )
 
@@ -336,7 +343,8 @@ fun PremiumFormCard(title: String, icon: ImageVector, content: @Composable Colum
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f))
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {

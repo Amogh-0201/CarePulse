@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -105,7 +107,8 @@ fun HealthRecordViewerScreen(
                             .fillMaxWidth()
                             .height(260.dp),
                         shape = RoundedCornerShape(32.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f))
                     ) {
                         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                             if (record.fileType == FileType.IMAGE) {
@@ -175,7 +178,8 @@ fun HealthRecordViewerScreen(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(28.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f))
                     ) {
                         Column(modifier = Modifier.padding(24.dp)) {
                             Text(
@@ -233,7 +237,8 @@ fun HealthRecordViewerScreen(
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(28.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary.copy(0.03f))
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary.copy(0.03f)),
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = if (isSystemInDarkTheme()) 0.3f else 0.05f))
                         ) {
                             Column(modifier = Modifier.padding(24.dp)) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {

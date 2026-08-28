@@ -1,5 +1,6 @@
 package com.app.patientcareapp.core.presentation.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -60,6 +61,8 @@ fun AppSnackbar(
             containerColor = containerColor,
             contentColor = contentColor
         ),
+
+        border = BorderStroke(1.dp, if (isDark) Color(0xFF3E4C5F) else Color(0xFFE2E8F0).copy(alpha = 0.5f)),
 
         elevation = CardDefaults.cardElevation(
             defaultElevation = 8.dp

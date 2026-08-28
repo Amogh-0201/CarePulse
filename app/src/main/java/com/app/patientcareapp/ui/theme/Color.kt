@@ -25,11 +25,28 @@ val LightTeal = Color(0xFFCFFAFE)
 // ... existing colors ...
 
 // Dark Mode Palette (Rich Navy & Slate)
-val DarkBackground = Color(0xFF0F172A) // Deep Navy
-val DarkSurface = Color(0xFF1E293B)    // Slightly lighter Navy for cards
-val DarkTextPrimary = Color(0xFFF8FAFC) // Off-white
-val DarkTextSecondary = Color(0xFF94A3B8) // Muted slate gray
+// Main background — almost neutral, slightly cool
+val DarkBackground = Color(0xFF0B1220)
 
-// Accent colors remain vibrant but slightly adjusted for contrast if needed
-val DarkPrimaryBlue = Color(0xFF3B82F6) // Brighter blue for dark background
-val DarkSecondaryTeal = Color(0xFF22D3EE) // Brighter teal
+// Cards / elevated surfaces
+val DarkSurface = Color(0xFF151F2E)
+
+// Slightly elevated surface
+val DarkSurfaceVariant = Color(0xFF1C2938)
+
+// Primary text
+val DarkTextPrimary = Color(0xFFF1F5F9)
+
+// Secondary text
+val DarkTextSecondary = Color(0xFF94A3B8)
+
+// Muted / disabled text
+val DarkTextMuted = Color(0xFF64748B)
+
+// Borders / dividers
+val DarkOutline = Color(0xFF334155)
+
+
+// Dark-mode brand colors
+val DarkPrimaryBlue = Color(0xFF60A5FA)
+val DarkSecondaryTeal = Color(0xFF22D3EE)

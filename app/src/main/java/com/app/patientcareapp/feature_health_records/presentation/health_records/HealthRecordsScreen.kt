@@ -2,8 +2,10 @@ package com.app.patientcareapp.feature_health_records.presentation.health_record
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -107,7 +109,7 @@ fun HealthRecordsScreen(
                         colors = OutlinedTextFieldDefaults.colors(
                             unfocusedContainerColor = MaterialTheme.colorScheme.surface.copy(0.7f),
                             focusedContainerColor = MaterialTheme.colorScheme.surface,
-                            unfocusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f),
                             focusedBorderColor = MaterialTheme.colorScheme.primary.copy(0.5f)
                         ),
                         singleLine = true
@@ -214,7 +216,8 @@ fun HealthRecordCard(
             .clickable { onClick() },
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f))
     ) {
         Row(
             modifier = Modifier.padding(16.dp),

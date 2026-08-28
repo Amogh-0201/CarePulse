@@ -1,7 +1,9 @@
 package com.app.patientcareapp.feature_profile.presentation.edit_profile
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -96,7 +98,8 @@ fun EditProfileScreen(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
                     ),
-                    elevation = CardDefaults.cardElevation(0.dp)
+                    elevation = CardDefaults.cardElevation(0.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f))
                 ) {
                     Row(
                         modifier = Modifier.padding(20.dp),
@@ -134,7 +137,10 @@ fun EditProfileScreen(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
                         label = { Text("Your Age") },
-                        singleLine = true
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f)
+                        )
                     )
                 }
 
@@ -171,7 +177,10 @@ fun EditProfileScreen(
                         label = { Text("Blood Pressure (mmHg)") },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
-                        placeholder = { Text("e.g. 120/80") }
+                        placeholder = { Text("e.g. 120/80") },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f)
+                        )
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     OutlinedTextField(
@@ -180,7 +189,10 @@ fun EditProfileScreen(
                         label = { Text("Sugar Level (mg/dL)") },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
-                        placeholder = { Text("e.g. 95") }
+                        placeholder = { Text("e.g. 95") },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f)
+                        )
                     )
                 }
 
@@ -213,7 +225,8 @@ private fun PremiumEditCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(0.5.dp)
+        elevation = CardDefaults.cardElevation(0.5.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f))
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -251,7 +264,10 @@ private fun EditablePremiumChipSection(
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(16.dp),
                 placeholder = { Text("Add new...") },
-                singleLine = true
+                singleLine = true,
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = if (isSystemInDarkTheme()) 0.5f else 0.1f)
+                )
             )
             Spacer(modifier = Modifier.width(8.dp))
             IconButton(
