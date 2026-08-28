@@ -34,9 +34,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.app.patientcareapp.core.presentation.components.AppSnackbarHost
 import com.app.patientcareapp.feature_health_records.domain.model.FileType
-import com.app.patientcareapp.ui.theme.PrimaryBlue
-import com.app.patientcareapp.ui.theme.SecondaryTeal
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -83,7 +82,7 @@ fun HealthRecordViewerScreen(
             )
         },
         modifier = Modifier.fillMaxSize(),
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+        snackbarHost = { AppSnackbarHost(hostState = snackbarHostState) }
     ) { padding ->
         Box(modifier = Modifier.fillMaxSize().background(bgGradient).padding(padding)) {
             if (record == null) {

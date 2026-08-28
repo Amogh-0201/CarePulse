@@ -27,10 +27,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.app.patientcareapp.core.presentation.components.AppSnackbarHost
 import com.app.patientcareapp.feature_health_records.domain.model.FileType
 import com.app.patientcareapp.feature_health_records.domain.model.RecordCategory
-import com.app.patientcareapp.ui.theme.PrimaryBlue
-import com.app.patientcareapp.ui.theme.SecondaryTeal
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,7 +82,7 @@ fun AddHealthRecordsScreen(
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
+        snackbarHost = { AppSnackbarHost(hostState = snackBarHostState) },
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().background(bgGradient).padding(innerPadding)) {

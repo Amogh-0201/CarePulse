@@ -25,11 +25,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.app.patientcareapp.core.presentation.components.AppSnackbarHost
 import com.app.patientcareapp.core.util.Screen
 import com.app.patientcareapp.feature_onboarding.presentation.events.OnBoardingScreenEvents
 import com.app.patientcareapp.feature_onboarding.presentation.viewmodels.OnBoardingViewModel
-import com.app.patientcareapp.ui.theme.PrimaryBlue
-import com.app.patientcareapp.ui.theme.SecondaryTeal
 
 @Composable
 fun AskAllergiesScreen(
@@ -70,7 +69,7 @@ fun AskAllergiesScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
+        snackbarHost = { AppSnackbarHost(hostState = snackBarHostState) }
     ) { padding ->
         Box(
             modifier = Modifier

@@ -24,8 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.app.patientcareapp.ui.theme.PrimaryBlue
-import com.app.patientcareapp.ui.theme.SecondaryTeal
+import com.app.patientcareapp.core.presentation.components.AppSnackbarHost
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -61,7 +60,7 @@ fun EditProfileScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
+        snackbarHost = { AppSnackbarHost(hostState = snackBarHostState) },
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("Edit Profile", fontWeight = FontWeight.Bold) },

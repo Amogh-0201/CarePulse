@@ -23,9 +23,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.app.patientcareapp.core.presentation.components.AppSnackbarHost
 import com.app.patientcareapp.core.util.Screen
-import com.app.patientcareapp.ui.theme.PrimaryBlue
-import com.app.patientcareapp.ui.theme.SecondaryTeal
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -71,7 +70,7 @@ fun AddEditMedReminderScreen(
     )
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackBarHostState) },
+        snackbarHost = { AppSnackbarHost(snackBarHostState) },
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text(viewModel.heading ?: "Med Reminder", fontWeight = FontWeight.Bold) },

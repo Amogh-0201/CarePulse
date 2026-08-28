@@ -24,10 +24,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.app.patientcareapp.core.presentation.components.AppSnackbarHost
 import com.app.patientcareapp.feature_health_records.domain.model.HealthRecord
 import com.app.patientcareapp.feature_health_records.domain.model.RecordCategory
-import com.app.patientcareapp.ui.theme.PrimaryBlue
-import com.app.patientcareapp.ui.theme.SecondaryTeal
 import kotlinx.coroutines.flow.collectLatest
 import java.text.SimpleDateFormat
 import java.util.*
@@ -85,7 +84,7 @@ fun HealthRecordsScreen(
                 text = { Text("Upload Record", fontWeight = FontWeight.Bold) }
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
+        snackbarHost = { AppSnackbarHost(hostState = snackBarHostState) }
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().background(bgGradient).padding(innerPadding)) {
             LazyColumn(
