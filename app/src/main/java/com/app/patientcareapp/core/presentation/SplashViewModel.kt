@@ -1,4 +1,4 @@
-package com.app.patientcareapp
+package com.app.patientcareapp.core.presentation
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class SplashViewModel @Inject constructor(
     private val preferenceManager: PreferenceManager
 ): ViewModel() {
 

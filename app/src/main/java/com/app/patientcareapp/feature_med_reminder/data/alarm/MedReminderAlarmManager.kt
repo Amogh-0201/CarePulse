@@ -19,6 +19,11 @@ class MedReminderAlarmManager(
                 reminder.startDate,
                 reminder.repeatType)
 
+            // Skip scheduling if the calculated trigger time is already past the end date
+            if (reminder.endDate != null && triggerTime > reminder.endDate) {
+                return@forEachIndexed
+            }
+
             scheduler.scheduleReminder(
                 id = reminder.id!! * 100 + index,
                 triggerTimeMillis = triggerTime,

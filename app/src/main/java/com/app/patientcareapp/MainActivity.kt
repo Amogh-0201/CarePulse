@@ -9,15 +9,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.app.patientcareapp.core.navigation.Navigation
 import com.app.patientcareapp.core.presentation.BrandedSplashScreen
-import com.app.patientcareapp.feature_med_reminder.data.alarm.MedicineAlarmScheduler
+import com.app.patientcareapp.core.presentation.SplashViewModel
 import com.app.patientcareapp.ui.theme.PatientCareAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,7 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: SplashViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()

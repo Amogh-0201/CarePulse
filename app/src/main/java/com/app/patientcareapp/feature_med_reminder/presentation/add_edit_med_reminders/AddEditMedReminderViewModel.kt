@@ -97,11 +97,24 @@ class AddEditMedReminderViewModel @Inject constructor(
                     set(Calendar.SECOND, 59)
                 }
                 endDate = calendar.timeInMillis
+
+                val currentTime = System.currentTimeMillis()
+                endDate?.let {
+                    if( it < currentTime ) {
+                        isActive = false
+                    }
+                }
             }
             is AddEditMedReminderEvents.OnRepeatTypeChange -> {
                 repeatType = event.repeatType
             }
             is AddEditMedReminderEvents.OnIsActiveChange -> {
+                if (event.isActive && endDate != null && endDate!! < System.currentTimeMillis()) {
+                    viewModelScope.launch {
+                        _uiEvent.emit(UiEvent.ShowError("Cannot activate an expired reminder"))
+                    }
+                    return
+                }
                 isActive = event.isActive
             }
             is AddEditMedReminderEvents.OnNotesChange -> {
@@ -122,6 +135,17 @@ class AddEditMedReminderViewModel @Inject constructor(
                 _uiEvent.emit(UiEvent.ShowError("please fill all the required fields"))
                 return@launch
             }
+
+            val currentTime = System.currentTimeMillis()
+            var finalIsActive = isActive
+
+            if (endDate != null && endDate!! < currentTime) {
+                if (finalIsActive) {
+                    _uiEvent.emit(UiEvent.ShowError("Reminder end date has already passed. Saving as inactive."))
+                    finalIsActive = false
+                }
+            }
+
             try {
 
                 if (currentId != null) {
@@ -138,7 +162,7 @@ class AddEditMedReminderViewModel @Inject constructor(
                     startDate = startDate!!,
                     endDate = endDate,
                     repeatType = repeatType,
-                    isActive = isActive,
+                    isActive = finalIsActive,
                     notes = notes
                 )
 
