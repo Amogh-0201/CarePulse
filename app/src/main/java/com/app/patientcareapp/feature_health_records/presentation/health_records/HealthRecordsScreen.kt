@@ -1,6 +1,7 @@
 package com.app.patientcareapp.feature_health_records.presentation.health_records
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.app.patientcareapp.core.presentation.components.AppSnackbarHost
+import com.app.patientcareapp.core.presentation.components.UploadRecordFab
 import com.app.patientcareapp.feature_health_records.domain.model.HealthRecord
 import com.app.patientcareapp.feature_health_records.domain.model.RecordCategory
 import kotlinx.coroutines.flow.collectLatest
@@ -68,20 +70,13 @@ fun HealthRecordsScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Health Records", fontWeight = FontWeight.Bold) },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.Transparent)
-            )
-        },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = { viewModel.onEvent(HealthRecordsScreenEvents.OnAddHealthRecordClick) },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = Color.White,
-                shape = RoundedCornerShape(20.dp),
-                icon = { Icon(Icons.Rounded.Add, "Add") },
-                text = { Text("Upload Record", fontWeight = FontWeight.Bold) }
+            UploadRecordFab(
+                onClick = {
+                    viewModel.onEvent(
+                        HealthRecordsScreenEvents.OnAddHealthRecordClick
+                    )
+                }
             )
         },
         snackbarHost = { AppSnackbarHost(hostState = snackBarHostState) }
@@ -92,6 +87,14 @@ fun HealthRecordsScreen(
                 contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                item {
+                    Text(
+                        text = "Health Records",
+                        modifier = Modifier.padding(start = 12.dp),
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Black
+                    )
+                }
                 // Search Bar
                 item {
                     OutlinedTextField(
@@ -145,11 +148,19 @@ fun HealthRecordsScreen(
                     item { EmptyRecordsState() }
                 } else {
                     items(items = viewModel.healthRecords, key = { it.id }) { record ->
-                        HealthRecordCard(
-                            record = record,
-                            onClick = { viewModel.onEvent(HealthRecordsScreenEvents.OnHealthRecordClick(record)) },
-                            onDelete = { viewModel.onEvent(HealthRecordsScreenEvents.OnDeleteHealthRecord(record)) }
-                        )
+                        Box(
+                            modifier = Modifier.animateItem(
+                                fadeInSpec = tween(500),
+                                fadeOutSpec = tween(500),
+                                placementSpec = tween(500)
+                            )
+                        ) {
+                            HealthRecordCard(
+                                record = record,
+                                onClick = { viewModel.onEvent(HealthRecordsScreenEvents.OnHealthRecordClick(record)) },
+                                onDelete = { viewModel.onEvent(HealthRecordsScreenEvents.OnDeleteHealthRecord(record)) }
+                            )
+                        }
                     }
                 }
 
@@ -260,9 +271,25 @@ fun HealthRecordCard(
 
             IconButton(
                 onClick = onDelete,
-                modifier = Modifier.background(MaterialTheme.colorScheme.error.copy(0.05f), CircleShape).size(32.dp)
+                modifier = Modifier.size(40.dp)
             ) {
-                Icon(Icons.Rounded.Delete, null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(16.dp))
+                Surface(
+                    onClick = onDelete,
+                    modifier = Modifier.size(40.dp),
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.error.copy(alpha = 0.07f),
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.DeleteOutline,
+                            contentDescription = "Delete health record",
+                            tint = MaterialTheme.colorScheme.error.copy(alpha = 0.8f),
+                            modifier = Modifier.size(19.dp)
+                        )
+                    }
+                }
             }
         }
     }

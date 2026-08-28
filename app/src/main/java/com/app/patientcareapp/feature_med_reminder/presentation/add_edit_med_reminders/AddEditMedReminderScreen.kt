@@ -1,5 +1,6 @@
 package com.app.patientcareapp.feature_med_reminder.presentation.add_edit_med_reminders
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -136,7 +137,24 @@ fun AddEditMedReminderScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    Text("Reminder Times*", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Reminder Times*",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Spacer(Modifier.weight(1f))
+
+                        Text(
+                            text = "${viewModel.times.size} time${if (viewModel.times.size != 1) "s" else ""}",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        )
+                    }
 
                     FlowRow(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
@@ -163,12 +181,38 @@ fun AddEditMedReminderScreen(
                             )
                         }
                         // Add Time Button
-                        AssistChip(
+                        Surface(
                             onClick = { showTimePicker.value = true },
-                            label = { Text("Add Time") },
                             shape = CircleShape,
-                            leadingIcon = { Icon(Icons.Rounded.Add, null, modifier = Modifier.size(18.dp)) }
-                        )
+                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.08f),
+                            border = BorderStroke(
+                                1.dp,
+                                MaterialTheme.colorScheme.secondary.copy(alpha = 0.45f)
+                            )
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(
+                                    horizontal = 14.dp,
+                                    vertical = 7.dp
+                                ),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Add,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.secondary,
+                                    modifier = Modifier.size(18.dp)
+                                )
+
+                                Text(
+                                    text = "Add Time",
+                                    style = MaterialTheme.typography.labelLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+                        }
                     }
                 }
 

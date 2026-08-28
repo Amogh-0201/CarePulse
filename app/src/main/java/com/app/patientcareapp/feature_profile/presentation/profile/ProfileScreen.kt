@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.app.patientcareapp.core.presentation.components.EditProfileFab
 import com.app.patientcareapp.ui.theme.PrimaryBlue
 import com.app.patientcareapp.ui.theme.SecondaryTeal
 
@@ -63,13 +64,12 @@ fun ProfileScreen(
             )
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = { viewModel.onEvent(ProfileScreenEvents.OnEditProfileClick) },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = Color.White,
-                shape = RoundedCornerShape(20.dp),
-                icon = { Icon(Icons.Rounded.Edit, "Edit") },
-                text = { Text("Edit Profile", fontWeight = FontWeight.Bold) }
+            EditProfileFab(
+                onClick = {
+                    viewModel.onEvent(
+                        ProfileScreenEvents.OnEditProfileClick
+                    )
+                }
             )
         }
     ) { paddingValues ->

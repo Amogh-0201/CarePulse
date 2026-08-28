@@ -1,6 +1,7 @@
 package com.app.patientcareapp.feature_med_reminder.presentation.show_med_reminders
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.app.patientcareapp.core.presentation.components.AddMedReminderFab
 import com.app.patientcareapp.core.presentation.components.AppSnackbarHost
 import com.app.patientcareapp.feature_med_reminder.domain.model.MedReminder
 import kotlinx.coroutines.launch
@@ -76,13 +78,12 @@ fun MedReminderScreen(
         snackbarHost = { AppSnackbarHost(hostState = snackBarHostState) },
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = { viewModel.onEvent(MedReminderScreenEvents.OnAddMedReminderClick) },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = Color.White,
-                shape = RoundedCornerShape(20.dp),
-                icon = { Icon(Icons.Rounded.Add, "Add") },
-                text = { Text("New Reminder", fontWeight = FontWeight.Bold) }
+            AddMedReminderFab(
+                onClick = {
+                    viewModel.onEvent(
+                        MedReminderScreenEvents.OnAddMedReminderClick
+                    )
+                }
             )
         }
     ) { padding ->
@@ -98,16 +99,25 @@ fun MedReminderScreen(
                     item {
                         Text(
                             text = "Medications",
+                            modifier = Modifier.padding(start = 12.dp),
                             style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Black
                         )
                     }
                     items(medReminders, key = { it.id ?: it.medicineName }) { reminder ->
-                        EnhancedMedReminderItem(
-                            reminder = reminder,
-                            onClick = { reminder.id?.let { viewModel.onEvent(MedReminderScreenEvents.OnMedReminderClick(it)) } },
-                            onDeleteClick = { reminder.id?.let { viewModel.onEvent(MedReminderScreenEvents.OnDeleteMedReminderClick(it)) } }
-                        )
+                        Box(
+                            modifier = Modifier.animateItem(
+                                fadeInSpec = tween(500),
+                                fadeOutSpec = tween(500),
+                                placementSpec = tween(500)
+                            )
+                        ) {
+                            EnhancedMedReminderItem(
+                                reminder = reminder,
+                                onClick = { reminder.id?.let { viewModel.onEvent(MedReminderScreenEvents.OnMedReminderClick(it)) } },
+                                onDeleteClick = { reminder.id?.let { viewModel.onEvent(MedReminderScreenEvents.OnDeleteMedReminderClick(it)) } }
+                            )
+                        }
                     }
                 }
             }
@@ -162,8 +172,27 @@ fun EnhancedMedReminderItem(
                     Text(reminder.dosage, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(0.6f))
                 }
 
-                IconButton(onClick = onDeleteClick, modifier = Modifier.background(MaterialTheme.colorScheme.errorContainer.copy(0.4f), CircleShape).size(36.dp)) {
-                    Icon(Icons.Rounded.Delete, "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(18.dp))
+                IconButton(
+                    onClick = onDeleteClick,
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Surface(
+                        onClick = onDeleteClick,
+                        modifier = Modifier.size(40.dp),
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.error.copy(alpha = 0.07f),
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.DeleteOutline,
+                                contentDescription = "Delete health record",
+                                tint = MaterialTheme.colorScheme.error.copy(alpha = 0.8f),
+                                modifier = Modifier.size(19.dp)
+                            )
+                        }
+                    }
                 }
             }
 
