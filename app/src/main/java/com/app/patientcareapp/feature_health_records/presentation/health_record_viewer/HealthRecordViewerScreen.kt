@@ -145,16 +145,51 @@ fun HealthRecordViewerScreen(
                                 }
                             } else {
                                 // PDF Preview State
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Icon(
-                                        Icons.Rounded.PictureAsPdf,
-                                        null,
-                                        modifier = Modifier.size(64.dp),
-                                        tint = Color(0xFFEF4444)
+                                val isDark = isSystemInDarkTheme()
+                                // Enhanced background for PDF in dark mode
+                                val pdfPreviewBrush = if (isDark) {
+                                    Brush.verticalGradient(
+                                        listOf(
+                                            MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
+                                            MaterialTheme.colorScheme.surface
+                                        )
                                     )
-                                    Spacer(Modifier.height(12.dp))
+                                } else null
+
+                                Column(
+                                    modifier = Modifier.fillMaxSize().then(
+                                        if (isDark && pdfPreviewBrush != null) Modifier.background(pdfPreviewBrush) else Modifier
+                                    ),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    if (isDark) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(90.dp)
+                                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Icon(
+                                                Icons.Rounded.PictureAsPdf,
+                                                null,
+                                                modifier = Modifier.size(56.dp),
+                                                tint = Color(0xFFEF4444)
+                                            )
+                                        }
+                                        Spacer(Modifier.height(16.dp))
+                                    } else {
+                                        Icon(
+                                            Icons.Rounded.PictureAsPdf,
+                                            null,
+                                            modifier = Modifier.size(64.dp),
+                                            tint = Color(0xFFEF4444)
+                                        )
+                                        Spacer(Modifier.height(12.dp))
+                                    }
+
                                     Text("PDF Document", fontWeight = FontWeight.Bold)
-                                    Spacer(Modifier.height(20.dp))
+                                    Spacer(Modifier.height(if (isDark) 24.dp else 20.dp))
                                     Button(
                                         onClick = {
                                             openDocument(
