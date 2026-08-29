@@ -29,8 +29,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import com.app.patientcareapp.core.util.BatteryOptimizationHelper
 import com.app.patientcareapp.core.util.Screen
+import com.app.patientcareapp.feature_med_reminder.data.alarm.MedicineAlarmScheduler
 
 @Composable
 fun HomeScreen(
@@ -41,14 +41,15 @@ fun HomeScreen(
     onRecordsCountClick: () -> Unit
 ) {
     val context = LocalContext.current
-    val isPreferenceDismissed by viewModel.isBatteryWarningDismissed.collectAsState()
-    var isSystemOptimizingBattery by remember { mutableStateOf(false) }
+    val isAlarmWarningDismissed by viewModel.isAlarmWarningDismissed.collectAsState()
+    var isAlarmPermissionMissing by remember { mutableStateOf(false) }
 
     // Logic to detect loading: if userName is blank and no medicines yet, we are likely loading
     val isLoading = viewModel.userName.isBlank() && viewModel.todayMedicines.isEmpty()
 
     LaunchedEffect(Unit) {
-        isSystemOptimizingBattery = !BatteryOptimizationHelper.isIgnoringBatteryOptimizations(context)
+        val scheduler = MedicineAlarmScheduler(context)
+        isAlarmPermissionMissing = !scheduler.hasExactAlarmPermission()
     }
 
     // --- Premium Mesh Background ---
@@ -72,8 +73,8 @@ fun HomeScreen(
                 HomeScreenContent(
                     viewModel = viewModel,
                     paddingValues = paddingValues,
-                    isSystemOptimizingBattery = isSystemOptimizingBattery,
-                    isPreferenceDismissed = isPreferenceDismissed,
+                    isAlarmPermissionMissing = isAlarmPermissionMissing,
+                    isAlarmWarningDismissed = isAlarmWarningDismissed,
                     onMedicineClick = onMedicineClick,
                     onProfileClick = {
                         navController.navigate(Screen.Profile.route) {
@@ -95,8 +96,8 @@ fun HomeScreen(
 private fun HomeScreenContent(
     viewModel: HomeViewModel,
     paddingValues: PaddingValues,
-    isSystemOptimizingBattery: Boolean,
-    isPreferenceDismissed: Boolean,
+    isAlarmPermissionMissing: Boolean,
+    isAlarmWarningDismissed: Boolean,
     onMedicineClick: (Int) -> Unit,
     onProfileClick: () -> Unit,
     onRecordsCountClick: () -> Unit
@@ -114,8 +115,8 @@ private fun HomeScreenContent(
         // 1. Premium Header
         item { HeaderSection(userName = viewModel.userName, onProfileClick = onProfileClick) }
 
-        if (isSystemOptimizingBattery && !isPreferenceDismissed) {
-            item { BatteryWarningCard(onDismiss = { viewModel.dismissBatteryWarning() }) }
+        if (isAlarmPermissionMissing && !isAlarmWarningDismissed) {
+            item { AlarmPermissionWarningCard(onDismiss = { viewModel.dismissAlarmWarning() }) }
         }
 
         item {
@@ -697,7 +698,7 @@ private fun EmptyMedicinesState() {
 }
 
 @Composable
-private fun BatteryWarningCard(onDismiss: () -> Unit) {
+private fun AlarmPermissionWarningCard(onDismiss: () -> Unit) {
     val context = LocalContext.current
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -709,14 +710,17 @@ private fun BatteryWarningCard(onDismiss: () -> Unit) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Rounded.Warning, null, tint = MaterialTheme.colorScheme.error)
                 Spacer(Modifier.width(8.dp))
-                Text("Delayed Alarms?", fontWeight = FontWeight.Bold)
+                Text("Exact Reminders Disabled", fontWeight = FontWeight.Bold)
             }
             Spacer(Modifier.height(8.dp))
-            Text("Phone battery settings might delay your reminders. You can safely dismiss this request if you want.", style = MaterialTheme.typography.bodySmall)
+            Text("Without the 'Alarms & Reminders' permission, your medicine notifications might be delayed by the system.", style = MaterialTheme.typography.bodySmall)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 TextButton(onClick = onDismiss) { Text("Dismiss", color = MaterialTheme.colorScheme.error) }
                 Button(
-                    onClick = { BatteryOptimizationHelper.openBatteryOptimizationSettings(context) },
+                    onClick = {
+                        val scheduler = MedicineAlarmScheduler(context)
+                        scheduler.openExactAlarmSettings()
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
                     Text("Fix Now", fontSize = 12.sp)

@@ -51,7 +51,8 @@ class MedicineReminderReceiver: BroadcastReceiver() {
                 hour = hour,
                 minute = minute,
                 startDateMillis = currentTime,
-                repeatType = repeatType
+                repeatType = repeatType,
+                forceNext = true
             )
 
             // 3. THE BOUNDARY CHECK: Only re-schedule if the next run is before or on the expiration date

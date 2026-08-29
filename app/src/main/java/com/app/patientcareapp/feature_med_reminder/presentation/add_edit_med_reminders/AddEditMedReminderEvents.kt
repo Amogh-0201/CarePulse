@@ -12,4 +12,5 @@ sealed class AddEditMedReminderEvents {
     data class OnNotesChange(val notes: String? = null): AddEditMedReminderEvents()
     object OnSaveButtonClick: AddEditMedReminderEvents()
     data class OnDeleteTime(val time: String): AddEditMedReminderEvents()
+    object OnFixAlarmPermission: AddEditMedReminderEvents()
 }

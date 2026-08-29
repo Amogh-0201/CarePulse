@@ -72,6 +72,7 @@ class AddEditMedReminderViewModel @Inject constructor(
     sealed class UiEvent {
         class ShowError(val message: String? = "Unknown Error Occurred"): UiEvent()
         object SaveSuccess: UiEvent()
+        object RequestExactAlarmPermission: UiEvent()
     }
 
     fun onEvent(event: AddEditMedReminderEvents) {
@@ -126,6 +127,9 @@ class AddEditMedReminderViewModel @Inject constructor(
             is AddEditMedReminderEvents.OnDeleteTime -> {
                 times = times.filter { it != event.time }
             }
+            is AddEditMedReminderEvents.OnFixAlarmPermission -> {
+                alarmManager.openExactAlarmSettings()
+            }
         }
     }
 
@@ -144,6 +148,11 @@ class AddEditMedReminderViewModel @Inject constructor(
                     _uiEvent.emit(UiEvent.ShowError("Reminder end date has already passed. Saving as inactive."))
                     finalIsActive = false
                 }
+            }
+
+            if (finalIsActive && !alarmManager.hasExactAlarmPermission()) {
+                _uiEvent.emit(UiEvent.RequestExactAlarmPermission)
+                return@launch
             }
 
             try {

@@ -47,12 +47,12 @@ class HomeViewModel @Inject constructor(
     var totalHealthRecords by mutableIntStateOf(0)
         private set
 
-    val isBatteryWarningDismissed = preferenceManager.isBatteryWarningDismissed
+    val isAlarmWarningDismissed = preferenceManager.isAlarmWarningDismissed
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
 
-    fun dismissBatteryWarning() {
+    fun dismissAlarmWarning() {
         viewModelScope.launch {
-            preferenceManager.setBatteryWarningDismissed(true)
+            preferenceManager.setAlarmWarningDismissed(true)
         }
     }
 

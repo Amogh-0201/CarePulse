@@ -21,15 +21,18 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.app.patientcareapp.core.presentation.components.AppSnackbarHost
 import com.app.patientcareapp.core.util.Screen
+import com.app.patientcareapp.feature_med_reminder.data.alarm.MedicineAlarmScheduler
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -40,6 +43,8 @@ fun AddEditMedReminderScreen(
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
     val focusManager = LocalFocusManager.current
+    val context = LocalContext.current
+    val showPermissionDialog = remember { mutableStateOf(false) }
 
     LaunchedEffect(true) {
         viewModel.uiEvent.collect { event ->
@@ -49,6 +54,9 @@ fun AddEditMedReminderScreen(
                 }
                 is AddEditMedReminderViewModel.UiEvent.SaveSuccess -> {
                     navController.popBackStack()
+                }
+                is AddEditMedReminderViewModel.UiEvent.RequestExactAlarmPermission -> {
+                    showPermissionDialog.value = true
                 }
             }
         }
@@ -111,6 +119,25 @@ fun AddEditMedReminderScreen(
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
                 Spacer(modifier = Modifier.height(4.dp))
+
+                val alarmManager = remember {
+                    MedicineAlarmScheduler(context)
+                }
+                var isAlarmPermissionGranted by remember {
+                    mutableStateOf(alarmManager.hasExactAlarmPermission())
+                }
+
+                // Check permission when returning to screen
+                LifecycleResumeEffect(Unit) {
+                    isAlarmPermissionGranted = alarmManager.hasExactAlarmPermission()
+                    onPauseOrDispose { }
+                }
+
+                if (!isAlarmPermissionGranted) {
+                    AlarmPermissionBanner(
+                        onFixClick = { viewModel.onEvent(AddEditMedReminderEvents.OnFixAlarmPermission) }
+                    )
+                }
 
                 // Section 1: Basic Info
                 PremiumFormCard(title = "Medicine Details", icon = Icons.Rounded.Medication) {
@@ -346,6 +373,52 @@ fun AddEditMedReminderScreen(
                 },
                 dismissButton = { TextButton(onClick = { showEndDatePicker.value = false }) { Text("Cancel") } }
             ) { DatePicker(state = datePickerState, showModeToggle = false) }
+        }
+
+        if (showPermissionDialog.value) {
+            AlertDialog(
+                onDismissRequest = { showPermissionDialog.value = false },
+                title = { Text("Exact Alarms Required") },
+                text = { Text("To ensure your medicine reminders fire exactly at the set time, please grant the 'Alarms & Reminders' permission in settings.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        viewModel.onEvent(AddEditMedReminderEvents.OnFixAlarmPermission)
+                        showPermissionDialog.value = false
+                    }) { Text("Go to Settings") }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showPermissionDialog.value = false }) { Text("Not Now") }
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun AlarmPermissionBanner(onFixClick: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(0.9f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.3f))
+    ) {
+        Column(Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Rounded.Warning, null, tint = MaterialTheme.colorScheme.error)
+                Spacer(Modifier.width(8.dp))
+                Text("Exact Reminders Disabled", fontWeight = FontWeight.Bold)
+            }
+            Spacer(Modifier.height(8.dp))
+            Text("Without the Alarms & Reminders permission, your medicine notifications might be delayed by the system.", style = MaterialTheme.typography.bodySmall)
+            Spacer(Modifier.height(8.dp))
+            Button(
+                onClick = onFixClick,
+                modifier = Modifier.align(Alignment.End),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                Text("Fix Permission", fontSize = 12.sp)
+            }
         }
     }
 }

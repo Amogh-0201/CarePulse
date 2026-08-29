@@ -43,4 +43,12 @@ class MedReminderAlarmManager(
             scheduler.cancelReminder(reminder.id!!*100 + index)
         }
     }
+
+    fun hasExactAlarmPermission(): Boolean {
+        return scheduler.hasExactAlarmPermission()
+    }
+
+    fun openExactAlarmSettings() {
+        scheduler.openExactAlarmSettings()
+    }
 }
