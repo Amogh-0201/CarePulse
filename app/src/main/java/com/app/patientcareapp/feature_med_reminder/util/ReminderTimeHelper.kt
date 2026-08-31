@@ -20,8 +20,6 @@ object ReminderTimeHelper {
             set(Calendar.MILLISECOND, 0)
         }
 
-        val currentTime = System.currentTimeMillis()
-        
         val daysToAdd = when (repeatType) {
             "DAILY" -> 1
             "EVERY_2_DAYS" -> 2
@@ -36,8 +34,9 @@ object ReminderTimeHelper {
             calendar.add(Calendar.DAY_OF_YEAR, daysToAdd)
         }
 
-        // Ensure the time is strictly in the future (plus a small buffer)
-        while (calendar.timeInMillis <= currentTime + 60000) {
+        // A receiver passes the scheduled occurrence as startDateMillis. Do not
+        // calculate from the delivery time, since delivery can be delayed.
+        while (calendar.timeInMillis <= System.currentTimeMillis()) {
             calendar.add(Calendar.DAY_OF_YEAR, daysToAdd)
         }
 

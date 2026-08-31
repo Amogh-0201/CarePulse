@@ -117,6 +117,13 @@ class AddEditMedReminderViewModel @Inject constructor(
                     return
                 }
                 isActive = event.isActive
+                if (!event.isActive && currentId != null) {
+                    viewModelScope.launch {
+                        useCases.getMedReminderUseCase(currentId!!)?.let {
+                            alarmManager.cancelMedReminder(it)
+                        }
+                    }
+                }
             }
             is AddEditMedReminderEvents.OnNotesChange -> {
                 notes = event.notes?: ""

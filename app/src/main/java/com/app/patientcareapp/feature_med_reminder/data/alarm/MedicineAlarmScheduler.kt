@@ -34,6 +34,7 @@ class MedicineAlarmScheduler(private val context: Context) {
             putExtra("end_date", endDate ?: -1L)
             putExtra("time_string", timeString)
             putExtra("index", index)
+            putExtra("scheduled_at", triggerTimeMillis)
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
@@ -45,21 +46,13 @@ class MedicineAlarmScheduler(private val context: Context) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
 
-            if (alarmManager.canScheduleExactAlarms()) {
-                alarmManager.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    triggerTimeMillis,
-                    pendingIntent
-                )
-            } else {
-                // FALLBACK: Use inexact alarm if permission is missing
-                // This will still fire, though it might be delayed by a few minutes by the OS
-                alarmManager.setAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    triggerTimeMillis,
-                    pendingIntent
-                )
-            }
+            if (!alarmManager.canScheduleExactAlarms()) return
+
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                triggerTimeMillis,
+                pendingIntent
+            )
 
         } else {
 

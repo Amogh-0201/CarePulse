@@ -9,6 +9,7 @@ class MedReminderAlarmManager(
 ) {
 
     fun scheduleMedReminder(reminder: MedReminder) {
+        if (!reminder.isActive || reminder.id == null) return
 
         reminder.times.forEachIndexed { index, time ->
             val (hour, minute) = ReminderTimeParser.parseTimeToHourMinute(time)
@@ -25,7 +26,7 @@ class MedReminderAlarmManager(
             }
 
             scheduler.scheduleReminder(
-                id = reminder.id!! * 100 + index,
+                id = reminder.id * 100 + index,
                 triggerTimeMillis = triggerTime,
                 title = reminder.medicineName,
                 message = "Take your ${reminder.medicineName}",
@@ -39,8 +40,9 @@ class MedReminderAlarmManager(
     }
 
     fun cancelMedReminder(reminder: MedReminder) {
+        if (reminder.id == null) return
         reminder.times.forEachIndexed { index, _ ->
-            scheduler.cancelReminder(reminder.id!!*100 + index)
+            scheduler.cancelReminder(reminder.id * 100 + index)
         }
     }
 

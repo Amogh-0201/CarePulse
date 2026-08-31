@@ -23,70 +23,63 @@ class MedicineReminderReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
 
         val id = intent.getIntExtra("id", -1)
-        val title = intent.getStringExtra("title") ?: "Medicine Time"
-        val message = intent.getStringExtra("message") ?: "Take your medicine"
-
-        // Extracting your MedReminder field variables
-        val dosage = intent.getStringExtra("dosage") ?: ""
-        val repeatType = intent.getStringExtra("repeat_type") ?: "DAILY"
-        val endDate = intent.getLongExtra("end_date", -1L)
-        val timeString = intent.getStringExtra("time_string") ?: ""
         val index = intent.getIntExtra("index", 0)
+        if (id == -1) return
 
-        val currentTime = System.currentTimeMillis()
-
-        // 0. CHECK EXPIRATION: If current time is already past end date, don't show notification and deactivate
-        if (endDate != -1L && currentTime > endDate) {
-            deactivateReminder(id)
-            return
-        }
-
-        // 1. Immediately pop up the notification to the user
-        NotificationHelper.showNotification(context, title, "$message ($dosage)")
-        if (timeString.isNotBlank() && id != -1) {
-            val (hour, minute) = ReminderTimeParser.parseTimeToHourMinute(timeString)
-
-            // Base it on the current time (since the past occurrence just finished)
-            val nextTriggerTime = ReminderTimeHelper.calculateNextTriggerTime(
-                hour = hour,
-                minute = minute,
-                startDateMillis = currentTime,
-                repeatType = repeatType,
-                forceNext = true
-            )
-
-            // 3. THE BOUNDARY CHECK: Only re-schedule if the next run is before or on the expiration date
-            if (endDate == -1L || nextTriggerTime <= endDate) {
-                val scheduler = MedicineAlarmScheduler(context)
-                scheduler.scheduleReminder(
-                    id = id,
-                    triggerTimeMillis = nextTriggerTime,
-                    title = title,
-                    message = message,
-                    dosage = dosage,
-                    repeatType = repeatType,
-                    endDate = if (endDate == -1L) null else endDate,
-                    timeString = timeString,
-                    index = index
-                )
-            } else {
-                // If the next trigger crosses the endDate, we don't call scheduleReminder.
-                // The alarm chain naturally terminates here.
-                // ALSO: Deactivate the reminder in DB as no more alarms will be scheduled
-                deactivateReminder(id)
-            }
-        }
-    }
-
-    private fun deactivateReminder(reminderId: Int) {
-        // The reminderId here is (medReminder.id * 100 + index)
-        val originalId = reminderId / 100
+        val pendingResult = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                useCases.updateReminderStatusUseCase(originalId, false)
-            } catch (e: Exception) {
-                e.printStackTrace()
+                val reminderId = id / 100
+                val reminder = useCases.getMedReminderUseCase(reminderId) ?: return@launch
+                val timeString = intent.getStringExtra("time_string") ?: return@launch
+                val scheduledAt = intent.getLongExtra("scheduled_at", 0L)
+
+                // An alarm can outlive an edit or a pause. Room is the source of
+                // truth, so stale alarms must not notify or create a new alarm.
+                if (!reminder.isActive ||
+                    index !in reminder.times.indices ||
+                    reminder.times[index] != timeString ||
+                    (reminder.endDate != null &&
+                        (System.currentTimeMillis() > reminder.endDate ||
+                            (scheduledAt > 0L && scheduledAt > reminder.endDate)))
+                ) return@launch
+
+                val (hour, minute) = ReminderTimeParser.parseTimeToHourMinute(timeString)
+                NotificationHelper.showNotification(
+                    context,
+                    reminder.medicineName,
+                    "Take your ${reminder.medicineName} (${reminder.dosage})"
+                )
+
+                val nextTriggerTime = ReminderTimeHelper.calculateNextTriggerTime(
+                    hour = hour,
+                    minute = minute,
+                    startDateMillis = if (scheduledAt > 0L) {
+                        scheduledAt
+                    } else {
+                        System.currentTimeMillis()
+                    },
+                    repeatType = reminder.repeatType,
+                    forceNext = true
+                )
+
+                if (reminder.endDate == null || nextTriggerTime <= reminder.endDate) {
+                    MedicineAlarmScheduler(context).scheduleReminder(
+                        id = id,
+                        triggerTimeMillis = nextTriggerTime,
+                        title = reminder.medicineName,
+                        message = "Take your ${reminder.medicineName}",
+                        dosage = reminder.dosage,
+                        repeatType = reminder.repeatType,
+                        endDate = reminder.endDate,
+                        timeString = timeString,
+                        index = index
+                    )
+                }
+            } finally {
+                pendingResult.finish()
             }
         }
     }
+
 }
